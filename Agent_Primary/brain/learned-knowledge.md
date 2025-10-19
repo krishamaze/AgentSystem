@@ -215,3 +215,94 @@ Set-Content -Path file.txt -Value $fixed -NoNewline
 4. Verify claims with actual code inspection
 
 **NEW PROTOCOL:** Before diagnosing bugs, use repomix or similar tools to understand full context.
+
+## Learning: 2025-10-19 19:58 - Repomix Analysis Success
+**FINDING:** factory.ts already has correct GeminiClient instantiation
+- Line: return new GeminiClient(this.geminiKey);
+- Status: No constructor bug in factory
+
+**REMAINING QUESTION:** What is the actual Gemini error user is experiencing?
+- Need user clarification on specific failure mode
+- May be API key, runtime error, or configuration issue
+
+## Learning: 2025-10-19 20:06 - Communication Protocol
+**CRITICAL USER FEEDBACK:**
+- "WAIT FOR ANSWER BEFORE COMMANDS LEARN"
+- "NEVER GIVE QUESTIONS AND COMMANDS TOGETHER"
+- "ALWAYS CHECK WHERE USER RUNS THE GIVEN COMMAND - LEARN"
+
+**MISTAKES:**
+- Asked question + gave command in same response
+- Didn't verify user's working directory before commands
+
+**CORRECT PROTOCOL:**
+1. If asking question → NO commands, wait for answer
+2. If giving command → NO questions, just command
+3. Before command → verify user is in correct directory
+4. Never mix questions and commands in same response
+
+**CLARIFICATION RECEIVED:**
+- Gemini integration fails on real device test with error message
+- Factory.ts is already correct (no constructor bug)
+- User pushed Agent system to GitHub successfully
+
+## Learning: 2025-10-19 20:12 - Question Optimization
+**CRITICAL USER FEEDBACK:**
+- "NEVER ASK QUESTION THAT YOU CAN GET TO KNOW BY POWERSHELL COMMAND - LEARN"
+
+**MISTAKE:**
+- Asked "Do you have Supabase CLI installed?" 
+- Could verify with: Get-Command supabase -ErrorAction SilentlyContinue
+
+**CORRECT APPROACH:**
+- Use PowerShell to check tool availability
+- Only ask questions that require user knowledge/decision
+- Verify environment state programmatically before asking
+
+**TEST CONTEXT RECEIVED:**
+- Deploy to Supabase Edge Functions (no JWT)
+- Gemini API key set in Supabase secrets
+- CLI verification needed via command
+
+## Learning: 2025-10-19 20:18 - Brain Update Protocol Enhancement
+**CRITICAL USER FEEDBACK:**
+- "Are you updating your brain on each command, simultaneously?"
+- "Is it possible to do the task and update your brain docs in single set of powershell command?"
+- "If possible, if not following this LEARN to FOLLOW this"
+
+**REALIZATION:**
+- I was giving task commands separately from brain updates
+- User expects brain updates INCLUDED in every command block
+- More efficient: task + brain update in ONE block
+
+**NEW PROTOCOL:**
+Every command block should:
+1. Perform the actual task
+2. Immediately add relevant learning to brain files
+3. Both actions in SAME PowerShell block
+
+**DEPLOYMENT SUCCESS:**
+- chat-api deployed to Supabase Edge Functions
+- Project: opaxtxfxropmjrrqlewh
+- All files uploaded: geminiClient.ts, factory.ts, config files
+- Secrets verified: GEMINI_API_KEY present (digest: 80a03f40...)
+- Status: Ready for testing
+
+## Learning: 2025-10-19 20:19 - Gemini Integration Test
+**TEST EXECUTED:**
+- Endpoint: https://opaxtxfxropmjrrqlewh.supabase.co/functions/v1/chat-api
+- Payload: Single message test event
+- Model: gemini-1.5-flash (configured in models.yaml)
+- Result: [Will be recorded after execution]
+
+## Learning: 2025-10-19 20:20 - Gemini Test Result (No Auth)
+**RESULT:** FAILED - Requires authentication
+**ERROR:** 
+**NEXT:** Need to configure function for no-JWT access or use service role key
+
+## Learning: 2025-10-19 20:20 - Supabase Edge Functions JWT Requirement
+**FINDING:** Function returns 401 Unauthorized without JWT
+**CAUSE:** Supabase Edge Functions verify JWT by default
+**USER REQUIREMENT:** "Deploy without JWT"
+**SOLUTION NEEDED:** Configure chat-api function with verify_jwt = false in config.toml
+**REFERENCE:** [functions.chat-api] section in supabase/config.toml
