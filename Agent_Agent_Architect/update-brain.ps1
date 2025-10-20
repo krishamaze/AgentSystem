@@ -1,7 +1,7 @@
 # Agent Brain Update Utility - Enhanced with Auto-Backup
 param(
     [string]$LearningNote,
-    [string]$AgentName = "Agent_Primary"
+    [string]$AgentName = "Agent_Agent_Architect"
 )
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"

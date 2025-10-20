@@ -306,3 +306,111 @@ Every command block should:
 **USER REQUIREMENT:** "Deploy without JWT"
 **SOLUTION NEEDED:** Configure chat-api function with verify_jwt = false in config.toml
 **REFERENCE:** [functions.chat-api] section in supabase/config.toml
+
+## Learning: 2025-10-19 21:43
+**SYSTEM ENHANCEMENT INITIATIVE:**
+- Agent_Architect spawned for infrastructure improvements
+- Purpose: Design backup systems, validation frameworks, brain health monitoring
+- First Mission: Design brain backup system to prevent knowledge loss if files corrupt
+- Rationale: Current system vulnerable to file corruption = permanent knowledge loss
+- Expected Output: Automated backup protocols, validation checksums, recovery mechanisms
+
+**ARCHITECTURE PRIORITIES:**
+1. Brain file corruption detection
+2. Automated backup systems (versioned, timestamped)
+3. Integrity validation frameworks
+4. Recovery protocols for corrupted brain states
+5. Health monitoring dashboards for all agents
+
+
+## Learning: 2025-10-19 21:44
+**TASK DELEGATED TO Agent_Architect:**
+- Assigned brain backup system design and implementation
+- Specification created: D:\AgentSystem\Agent_Architect\brain\current-task.md
+- Expected deliverables: Rotating backup system with 5-version retention
+- Will serve as test subject for backup system validation
+
+
+## Learning: 2025-10-19 21:49
+**SPAWN BUG DISCOVERED:**
+- spawn-agent.ps1 adds "Agent_" prefix, so "Agent_Architect" became "Agent_Agent_Architect"
+- Correct usage: spawn-agent.ps1 -AgentName "Architect" (not "Agent_Architect")
+- Agent_Agent_Architect exists and is functional despite naming issue
+
+**TASK DELEGATED TO Agent_Agent_Architect:**
+- Assigned brain backup system design and implementation
+- Specification: D:\AgentSystem\Agent_Agent_Architect\brain\current-task.md
+- Expected deliverables: Rotating backup system with 5-version retention
+- Will serve as test subject for backup validation
+
+
+## Learning: 2025-10-19 22:02
+**BACKUP SYSTEM TEST:**
+- Served as test subject for backup-brain.ps1 validation
+- First backup created by Agent_Agent_Architect's new system
+- Brain state preserved in: D:\AgentSystem\Backups\Agent_Primary\
+- Backup includes: meta-prompt.md, learned-knowledge.md, evolution-log.md, update-brain.ps1
+- Rotation system: Active (5-version limit)
+
+
+## Learning: 2025-10-19 22:05
+**ROTATION TEST EXECUTED:**
+- 5 consecutive backups created with 1-second intervals
+- Rotation mechanism validated: PASSED
+- Final backup count: 5 (expected: 5)
+- System successfully maintains version limit
+- Oldest backups automatically cleaned up
+
+
+## Learning: 2025-10-19 22:10
+**AUTO-BACKUP TEST:**
+- Testing enhanced update-brain.ps1 with integrated backup
+- This update should trigger automatic pre-update backup
+- Backup should occur BEFORE this learning is written
+- Test timestamp: 2025-10-19 22:10:03
+
+
+## Learning: 2025-10-19 22:10
+**AUTO-BACKUP INTEGRATION: CONFIRMED WORKING**
+- Test initially showed 'FAILED' due to flawed validation logic
+- ACTUAL RESULT: SUCCESS - auto-backup triggered before brain update
+- Evidence: New backup created at 22:10:03 (before this update was written)
+- Rotation working: Old backup deleted, maintaining 5-version limit
+- Lesson: Cannot use backup count to validate when rotation is active
+- Correct validation: Check newest backup timestamp > test start time
+
+
+## Learning: 2025-10-19 22:14
+**SYSTEM-WIDE DEPLOYMENT COMPLETE:**
+- Enhanced update-brain.ps1 deployed to all agents
+- Agents protected: Agent_Primary, Agent_CodeAssist, Agent_Agent_Architect
+- All agents now have automatic pre-update backup protection
+- Deployment timestamp: 2025-10-19 22:14
+- System-wide safety: All brain modifications now backed up automatically
+
+
+## Learning: 2025-10-20 06:50
+**INTELLIGENT RESURRECTION MISSION ASSIGNED:**
+- Delegated to: Agent_Agent_Architect
+- Task spec: D:\AgentSystem\Agent_Agent_Architect\brain\task-intelligent-resurrection.md
+- Current resurrect-me.ps1: Dumb dump (just outputs brain files)
+- Target: Intelligent analyzer (parses state, extracts tasks, generates recommendations)
+- User benefit: Session starts with clear next actions, not manual brain parsing
+
+**Requirements:**
+1. Parse all brain files automatically
+2. Extract pending tasks with regex patterns
+3. List active projects from Projects directory
+4. Generate 3 prioritized recommendations
+5. Present interactive menu with options
+
+**Expected transformation:**
+Before: Wall of text, user must parse manually
+After: Summary + pending tasks + recommendations + interactive options
+
+
+## Learning: 2025-10-19 20:21 - JWT Disabled for Testing
+**FIX APPLIED:** Changed verify_jwt = true → false in config.toml
+**REDEPLOYED:** chat-api function with no JWT requirement
+**STATUS:** Function now accessible without Authorization header
+**NEXT:** Retry test request without JWT
