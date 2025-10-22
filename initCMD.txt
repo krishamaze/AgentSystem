@@ -1,3 +1,14 @@
-﻿pwsh -NoProfile -ExecutionPolicy Bypass -File .\generate-init-prompt.ps1
-cd D:\AgentSystem
-.\start-session.ps1 -Intent production-hardening -ProjectFocus AgentSystem
+﻿# AgentSystem v4.0 - Graph-Powered Quick Start
+
+cd D:\AgentSystem; .\start-session.ps1 -Intent general -ProjectFocus AgentSystem
+
+# After running:
+# 1. Init prompt copied to clipboard (minimal, ~2KB)
+# 2. Open NEW Perplexity thread
+# 3. Paste clipboard content
+# 4. LLM queries Mem0 graph as needed: .\tools\query-mem0.ps1 -Query "..."
+# 5. You paste results, LLM gives 3-5 commands
+# 6. Execute commands, share results, repeat
+
+# System learns from each session!
+# End with: .\tools\end-session.ps1 -Outcome SUCCESS -Satisfaction 5

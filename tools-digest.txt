@@ -1,0 +1,943 @@
+Directory structure:
+└── tools/
+    ├── apply-optimization.ps1
+    ├── check-memory.ps1
+    ├── complete-milestone.ps1
+    ├── context-request.ps1
+    ├── create-adr.ps1
+    ├── end-session.ps1
+    ├── generate-optimization-report.ps1
+    ├── generate-session-index.ps1
+    ├── list-adrs.ps1
+    ├── list-projects.ps1
+    ├── load-memory.ps1
+    ├── load-project.ps1
+    ├── query-mem0.ps1
+    ├── switch-project.ps1
+    ├── track-metrics.ps1
+    └── update-priorities.ps1
+
+================================================
+FILE: apply-optimization.ps1
+================================================
+﻿# Apply LLM optimization decision to system
+# Executes configuration changes based on LLM analysis
+
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$DecisionJson
+)
+
+Write-Output "=== APPLYING LLM OPTIMIZATION ==="
+
+# Parse decision
+try {
+    $decision = $DecisionJson | ConvertFrom-Json
+} catch {
+    Write-Error "Invalid JSON format. Please provide valid decision JSON."
+    return
+}
+
+# Validate required fields
+if (-not $decision.action -or $decision.action -ne "SET_OPTIMIZATION") {
+    Write-Error "Invalid action. Must be 'SET_OPTIMIZATION'"
+    return
+}
+
+if (-not $decision.parameters) {
+    Write-Error "Missing parameters in decision"
+    return
+}
+
+# Load current config
+$config = Get-Content ".meta\system-optimization.json" | ConvertFrom-Json
+$previousConfig = $config.PSObject.Copy()
+
+# Validate parameters
+$params = $decision.parameters
+
+if ($params.P0_bytes -and $params.P0_bytes -lt 300) {
+    Write-Warning "⚠️  P0 allocation ($($params.P0_bytes) bytes) is very low. Minimum 300 bytes recommended."
+}
+
+if ($params.total_bytes -and $params.total_bytes -gt 5000) {
+    Write-Warning "⚠️  Total bandwidth ($($params.total_bytes) bytes) is very high. May affect performance."
+}
+
+# Apply changes
+Write-Output "`nApplying changes..."
+
+if ($params.total_bytes) {
+    $config.bandwidth.total_bytes = $params.total_bytes
+    Write-Output "  Total bandwidth: $($previousConfig.bandwidth.total_bytes) → $($params.total_bytes) bytes"
+}
+
+if ($params.P0_bytes) {
+    $config.bandwidth.P0_bytes = $params.P0_bytes
+    Write-Output "  P0 allocation: $($previousConfig.bandwidth.P0_bytes) → $($params.P0_bytes) bytes"
+}
+
+if ($params.P1_strategy) {
+    $config.bandwidth.P1_strategy = $params.P1_strategy
+    Write-Output "  P1 strategy: $($previousConfig.bandwidth.P1_strategy) → $($params.P1_strategy)"
+}
+
+if ($params.P2_strategy) {
+    $config.bandwidth.P2_strategy = $params.P2_strategy
+    Write-Output "  P2 strategy: $($previousConfig.bandwidth.P2_strategy) → $($params.P2_strategy)"
+}
+
+if ($null -ne $params.adaptive) {
+    $config.bandwidth.adaptive = $params.adaptive
+    Write-Output "  Adaptive: $($previousConfig.bandwidth.adaptive) → $($params.adaptive)"
+}
+
+if ($params.learning_rate) {
+    $config.learning.learning_rate = $params.learning_rate
+    Write-Output "  Learning rate: $($params.learning_rate)"
+}
+
+# Update metadata
+$config.last_updated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$config.updated_by = "LLM_OPTIMIZER"
+
+# Save updated config
+$config | ConvertTo-Json -Depth 10 | Out-File ".meta\system-optimization.json" -Encoding UTF8
+
+# Log decision
+$logEntry = @{
+    timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    decision = $decision.decision
+    previous_config = @{
+        total_bytes = $previousConfig.bandwidth.total_bytes
+        P0_bytes = $previousConfig.bandwidth.P0_bytes
+        P1_strategy = $previousConfig.bandwidth.P1_strategy
+    }
+    new_config = @{
+        total_bytes = $config.bandwidth.total_bytes
+        P0_bytes = $config.bandwidth.P0_bytes
+        P1_strategy = $config.bandwidth.P1_strategy
+    }
+    reason = $decision.reason
+    monitoring = $decision.monitoring
+    review_after = $decision.review_after
+} | ConvertTo-Json -Compress
+
+Add-Content ".meta\optimization-log.jsonl" -Value $logEntry
+
+Write-Output "`n✓ Optimization applied successfully"
+Write-Output "`nReason: $($decision.reason)"
+Write-Output "`nMonitoring: $($decision.monitoring -join ', ')"
+Write-Output "Review after: $($decision.review_after) sessions"
+Write-Output "`nConfiguration saved to .meta\system-optimization.json"
+
+
+
+================================================
+FILE: check-memory.ps1
+================================================
+ï»¿# Memory-First Protocol - Check before assuming
+param(
+    [string]$Project,
+    [string]$Query
+)
+
+if (-not $Project -or -not $Query) {
+    Write-Output "Usage: .\tools\check-memory.ps1 -Project <name> -Query <what to check>"
+    exit
+}
+
+Write-Output "=== MEMORY CHECK: $Project - $Query ==="
+
+# 1. Check project context
+Write-Output "`n1. Project Context:"
+$contextPath = ".\Projects\$Project\context.md"
+if (Test-Path $contextPath) {
+    Get-Content $contextPath | Select-String -Pattern $Query -Context 2
+} else {
+    Write-Output "   No context found"
+}
+
+# 2. Check project progress
+Write-Output "`n2. Project Progress:"
+$progressPath = ".\Projects\$Project\progress.json"
+if (Test-Path $progressPath) {
+    $progress = Get-Content $progressPath | ConvertFrom-Json
+    $progress.Milestones | Where-Object { $_.Name -like "*$Query*" } | ForEach-Object {
+        Write-Output "   Milestone: $($_.Name) - $($_.Status)"
+    }
+}
+
+# 3. Check decisions (ADRs)
+Write-Output "`n3. Decision Records (ADRs):"
+$registry = Get-Content ".\decisions\adr-registry.json" | ConvertFrom-Json
+$proj = $registry.projects.$Project
+if ($proj -and $proj.count -gt 0) {
+    foreach ($adr in $proj.adrs) {
+        Write-Output "   ADR-$($adr.id): $($adr.title) [$($adr.status)]"
+    }
+} else {
+    Write-Output "   No ADRs found (use .\tools\create-adr.ps1 to create)"
+}
+Write-Output ""
+
+# 3a. OLD ADR check (keep for compatibility)
+Write-Output "`n3. Decision Records:"
+$adrPath = ".\memory\tenants\$Project\decisions"
+if (Test-Path $adrPath) {
+    Get-ChildItem $adrPath -Filter "*.md" | ForEach-Object {
+        if ((Get-Content $_.FullName) -match $Query) {
+            Write-Output "   Found in: $($_.Name)"
+        }
+    }
+} else {
+    Write-Output "   No ADRs found (system needs ADR implementation)"
+}
+
+# 4. Query mem0 graph memory
+Write-Output "`n4. Graph Memory (mem0):"
+python -c @"
+from mem0 import Memory
+import os
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
+try:
+    m = Memory()
+    query = f'$Project $Query'
+    results = m.search(query, user_id='agent_primary', limit=5)
+    
+    if results:
+        for r in results:
+            print(f'   - {r.get(\"memory\", r)}')
+    else:
+        print('   No memories found')
+except Exception as e:
+    print(f'   Error: {e}')
+"@
+
+Write-Output "`n5. Recommendation:"
+Write-Output "   If no memories found above, ASK USER directly"
+Write-Output "   DO NOT ASSUME or implement blindly"
+
+
+
+
+================================================
+FILE: complete-milestone.ps1
+================================================
+ï»¿# Complete milestone and auto-sync
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$ProjectName,
+    
+    [Parameter(Mandatory=$true)]
+    [int]$MilestoneId,
+    
+    [string]$Notes = ""
+)
+
+Write-Output "=== COMPLETING MILESTONE $MilestoneId for $ProjectName ==="
+
+# Load project progress
+$progressPath = ".\Projects\$ProjectName\progress.json"
+if (-not (Test-Path $progressPath)) {
+    Write-Output "ERROR: Project not found: $ProjectName"
+    exit
+}
+
+$progress = Get-Content $progressPath | ConvertFrom-Json
+$milestone = $progress.Milestones | Where-Object { $_.Id -eq $MilestoneId }
+
+if (-not $milestone) {
+    Write-Output "ERROR: Milestone $MilestoneId not found"
+    exit
+}
+
+if ($milestone.Status -eq "COMPLETED") {
+    Write-Output "WARN: Milestone already completed on $($milestone.CompletionDate)"
+    Write-Output "Continue anyway? (y/n)"
+    # In automation, assume yes
+}
+
+# 1. Update milestone status
+Write-Output "`n1. Updating milestone status..."
+$milestone.Status = "COMPLETED"
+$milestone | Add-Member -NotePropertyName "CompletionDate" -NotePropertyValue (Get-Date -Format "yyyy-MM-dd") -Force
+$progress.CompletedMilestones = ($progress.Milestones | Where-Object { $_.Status -eq "COMPLETED" }).Count
+$progress.CurrentMilestoneId = $MilestoneId + 1
+$progress.LastUpdated = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$progress | ConvertTo-Json -Depth 5 | Out-File $progressPath -Encoding UTF8
+Write-Output "   âœ“ Milestone marked COMPLETED"
+
+# 2. Generate milestone report
+Write-Output "`n2. Generating milestone report..."
+$reportPath = ".\Projects\$ProjectName\reports"
+New-Item -ItemType Directory -Path $reportPath -Force | Out-Null
+
+$report = @"
+# Milestone $MilestoneId Completion Report
+
+**Project:** $ProjectName
+**Milestone:** $($milestone.Name)
+**Completed:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+**Owner:** $($progress.Owner)
+
+## Summary
+Milestone $MilestoneId ($($milestone.Name)) has been successfully completed.
+
+## Progress
+- Total Milestones: $($progress.TotalMilestones)
+- Completed: $($progress.CompletedMilestones)
+- Remaining: $($progress.TotalMilestones - $progress.CompletedMilestones)
+- Progress: $([math]::Round(($progress.CompletedMilestones / $progress.TotalMilestones) * 100, 0))%
+
+## Notes
+$Notes
+
+## Next Milestone
+$(if ($progress.CurrentMilestoneId -le $progress.TotalMilestones) {
+    $next = $progress.Milestones | Where-Object { $_.Id -eq $progress.CurrentMilestoneId }
+    "Milestone $($next.Id): $($next.Name)"
+} else {
+    "All milestones complete!"
+})
+
+## Generated
+$(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+"@
+
+$timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$report | Out-File "$reportPath\milestone-$MilestoneId-$timestamp.md" -Encoding UTF8
+Write-Output "   âœ“ Report: $reportPath\milestone-$MilestoneId-$timestamp.md"
+
+# 3. Git commit (if in git repo)
+Write-Output "`n3. Git version control..."
+if (Test-Path ".git") {
+    git add .
+    git commit -m "Milestone $MilestoneId complete: $($milestone.Name)" -q 2>&1 | Out-Null
+    $version = "$($progress.CompletedMilestones).$MilestoneId.0"
+    git tag -a "v$version" -m "Milestone complete: $($milestone.Name)" 2>&1 | Out-Null
+    Write-Output "   âœ“ Git commit created"
+    Write-Output "   âœ“ Tagged: v$version"
+} else {
+    Write-Output "   âš  Not a git repository (skipping)"
+}
+
+# 4. Sync to permanent memory
+Write-Output "`n4. Syncing to permanent memory..."
+python sync_all_learnings.py 2>&1 | Select-String "Total synced" | ForEach-Object {
+    Write-Output "   $_"
+}
+
+# 5. Update system index
+Write-Output "`n5. Updating system index..."
+$index = Get-Content ".meta\system-index.json" | ConvertFrom-Json
+$index.active_context.last_active = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$index | ConvertTo-Json -Depth 5 | Out-File ".meta\system-index.json" -Encoding UTF8
+
+Write-Output "`nâœ“ MILESTONE $MilestoneId COMPLETE"
+Write-Output "âœ“ Progress: $($progress.CompletedMilestones)/$($progress.TotalMilestones) milestones"
+Write-Output "âœ“ All changes committed and synced"
+
+
+
+
+================================================
+FILE: context-request.ps1
+================================================
+Error reading file with 'cp1252': 'charmap' codec can't decode byte 0x8f in position 4484: character maps to <undefined>
+
+
+================================================
+FILE: create-adr.ps1
+================================================
+ï»¿# Create new Architecture Decision Record
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$Project,
+    
+    [Parameter(Mandatory=$true)]
+    [string]$Title,
+    
+    [string]$Status = "Proposed"
+)
+
+# Get user info
+$users = Get-Content ".meta\users.json" | ConvertFrom-Json
+$primaryUser = $users.users | Where-Object { $_.id -eq $users.primary_user }
+
+# Determine next ADR number
+$projectPath = if ($Project -eq "AgentSystem") { 
+    ".\memory\tenants\AgentSystem\decisions" 
+} else { 
+    ".\memory\tenants\$Project\decisions" 
+}
+
+$existingAdrs = Get-ChildItem $projectPath -Filter "*.md" -ErrorAction SilentlyContinue
+$nextNumber = ($existingAdrs.Count + 1).ToString("000")
+
+# Create from template
+$template = Get-Content ".\decisions\templates\adr-template.md" -Raw
+$adr = $template -replace "ADR-XXX", "ADR-$nextNumber"
+$adr = $adr -replace "\[Decision Title\]", $Title
+$adr = $adr -replace "YYYY-MM-DD", (Get-Date -Format "yyyy-MM-dd")
+$adr = $adr -replace "\[Proposed \| Accepted \| Deprecated \| Superseded\]", $Status
+$adr = $adr -replace "\[List of people involved\]", $primaryUser.name
+$adr = $adr -replace "\[Project owner\]", $primaryUser.id
+
+# Save
+$filename = "$projectPath\$nextNumber-$($Title -replace '\s', '-' -replace '[^\w-]', '').md"
+$adr | Out-File $filename -Encoding UTF8
+
+Write-Output "âœ“ Created: $filename"
+Write-Output "`nEdit the file to complete the ADR"
+
+
+
+================================================
+FILE: end-session.ps1
+================================================
+﻿# End session and capture outcome feedback
+# Triggers optimization review if needed
+
+param(
+    [ValidateSet("SUCCESS", "PARTIAL_FAILURE", "FAILURE")]
+    [string]$Outcome = "SUCCESS",
+    [string]$UserFeedback = "",
+    [ValidateRange(1,5)]
+    [int]$Satisfaction = 5
+)
+
+if (-not $env:SESSION_ID) {
+    Write-Output "⚠️  No active session found"
+    $env:SESSION_ID = "manual_session_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    $env:SESSION_START = Get-Date
+    $env:COMMAND_COUNT = 0
+    $env:ERROR_COUNT = 0
+    $env:CONTEXT_REQUEST_COUNT = 0
+}
+
+$duration = ((Get-Date) - [datetime]$env:SESSION_START).TotalSeconds
+
+# Collect final session metrics
+$sessionMetrics = @{
+    session_id = $env:SESSION_ID
+    timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    duration_seconds = [math]::Round($duration, 0)
+    commands_executed = [int]$env:COMMAND_COUNT
+    errors = [int]$env:ERROR_COUNT
+    context_requests = [int]$env:CONTEXT_REQUEST_COUNT
+    outcome = $Outcome
+    satisfaction = $Satisfaction
+    user_feedback = $UserFeedback
+}
+
+# Save to telemetry
+Add-Content ".meta\telemetry.jsonl" -Value ($sessionMetrics | ConvertTo-Json -Compress)
+
+Write-Output "=== SESSION ENDED ==="
+Write-Output "  Session: $($env:SESSION_ID)"
+Write-Output "  Duration: $([math]::Round($duration/60, 1)) minutes"
+Write-Output "  Commands: $($env:COMMAND_COUNT)"
+Write-Output "  Outcome: $Outcome"
+Write-Output "  Satisfaction: $Satisfaction/5"
+Write-Output "  Feedback: $UserFeedback"
+Write-Output ""
+Write-Output "✓ Session metrics saved to telemetry"
+
+# Clear session variables
+Remove-Item Env:\SESSION_ID -ErrorAction SilentlyContinue
+Remove-Item Env:\SESSION_START -ErrorAction SilentlyContinue
+Remove-Item Env:\COMMAND_COUNT -ErrorAction SilentlyContinue
+Remove-Item Env:\ERROR_COUNT -ErrorAction SilentlyContinue
+Remove-Item Env:\CONTEXT_REQUEST_COUNT -ErrorAction SilentlyContinue
+Remove-Item Env:\TOOLS_USED -ErrorAction SilentlyContinue
+
+
+
+================================================
+FILE: generate-optimization-report.ps1
+================================================
+Error reading file with 'cp1252': 'charmap' codec can't decode byte 0x8f in position 3738: character maps to <undefined>
+
+
+================================================
+FILE: generate-session-index.ps1
+================================================
+﻿# Generate dynamic session context index
+# This is the "brain" that builds Level 2 index
+
+param([switch]$Verbose)
+
+$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
+# 1. Scan all projects
+Write-Output "🔍 Scanning projects..."
+$registry = Get-Content ".meta\tenant-registry.json" | ConvertFrom-Json
+$projectsData = @()
+
+foreach ($project in $registry.project_tenants) {
+    $progressPath = ".\Projects\$($project.name)\progress.json"
+    if (Test-Path $progressPath) {
+        $progress = Get-Content $progressPath | ConvertFrom-Json
+        $projectsData += @{
+            name = $project.name
+            status = $project.status
+            milestone = "$($progress.CompletedMilestones)/$($progress.TotalMilestones)"
+            percentage = [math]::Round(($progress.CompletedMilestones / $progress.TotalMilestones) * 100, 0)
+            current_milestone_id = $progress.CurrentMilestoneId
+            current_milestone_name = ($progress.Milestones | Where-Object { $_.Id -eq $progress.CurrentMilestoneId }).Name
+            path = $project.path
+            supabase = $project.supabase_url
+        }
+    }
+}
+
+# 2. Scan all tools with syntax
+Write-Output "🔍 Scanning tools..."
+$toolsData = @()
+$toolFiles = Get-ChildItem ".\tools\" -Filter "*.ps1"
+
+foreach ($tool in $toolFiles) {
+    $content = Get-Content $tool.FullName -Raw
+    
+    # Extract parameters from param() block
+    $params = "none"
+    if ($content -match 'param\s*\(([\s\S]*?)\)') {
+        $paramBlock = $matches[1]
+        $params = $paramBlock -replace '\s+', ' ' -replace '\[.*?\]', '' -replace 'Mandatory.*?>', '' | 
+                  Select-String -Pattern '\$\w+' -AllMatches | 
+                  ForEach-Object { $_.Matches.Value } | 
+                  Select-Object -Unique | 
+                  ForEach-Object { "-$($_.Substring(1)) <value>" }
+        $params = $params -join ' '
+    }
+    
+    # Extract purpose from first comment
+    $purpose = "Tool: $($tool.BaseName)"
+    if ($content -match '^#\s*(.+)') {
+        $purpose = $matches[1]
+    }
+    
+    $toolsData += @{
+        name = $tool.Name
+        syntax = $params
+        purpose = $purpose
+    }
+}
+
+# 3. Scan ADRs
+Write-Output "🔍 Scanning ADRs..."
+$adrRegistry = Get-Content ".\decisions\adr-registry.json" | ConvertFrom-Json
+$adrsData = @()
+
+foreach ($projName in $adrRegistry.projects.PSObject.Properties.Name) {
+    $proj = $adrRegistry.projects.$projName
+    if ($proj.count -gt 0) {
+        foreach ($adr in $proj.adrs) {
+            $adrsData += @{
+                project = $projName
+                id = $adr.id
+                title = $adr.title
+                status = $adr.status
+            }
+        }
+    }
+}
+
+# 4. Get system index info
+$systemIndex = Get-Content ".meta\system-index.json" | ConvertFrom-Json
+$activeProject = $systemIndex.active_context.current_project
+$lastActive = $systemIndex.active_context.last_active
+
+# 5. Get memory namespaces
+$namespaces = @(
+    "/system/core",
+    "/system/decisions",
+    "/system/feedback"
+)
+foreach ($project in $registry.project_tenants) {
+    $namespaces += "/projects/$($project.name)"
+}
+
+# 6. Get active milestone details for active project
+$activeProjectProgress = Get-Content ".\Projects\$activeProject\progress.json" | ConvertFrom-Json
+$activeMilestone = $activeProjectProgress.Milestones | Where-Object { $_.Id -eq $activeProjectProgress.CurrentMilestoneId }
+
+# 7. Get recent session (if exists)
+$lastSession = "No previous session logged"
+$sessionFiles = Get-ChildItem ".\sessions\" -Filter "*.md" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+if ($sessionFiles) {
+    $lastSession = "Last session: $($sessionFiles[0].BaseName)"
+}
+
+# 8. Build Level 2 index
+$sessionContext = @{
+    generated_at = $timestamp
+    version = "2.0-dynamic"
+    system_snapshot = @{
+        timestamp = $timestamp
+        active_project = $activeProject
+        last_active = $lastActive
+        projects_count = $projectsData.Count
+        total_adrs = $adrsData.Count
+        last_session = $lastSession
+    }
+    projects = $projectsData
+    tools = $toolsData
+    adrs = $adrsData
+    memory_namespaces = $namespaces
+    active_milestone = @{
+        project = $activeProject
+        id = $activeMilestone.Id
+        name = $activeMilestone.Name
+        status = $activeMilestone.Status
+        description = $activeMilestone.Description
+    }
+    quick_stats = @{
+        total_projects = $projectsData.Count
+        active_projects = ($projectsData | Where-Object { $_.status -eq "active" }).Count
+        total_milestones = ($projectsData | ForEach-Object { 
+            [int]($_.milestone -split '/')[1] 
+        } | Measure-Object -Sum).Sum
+        completed_milestones = ($projectsData | ForEach-Object { 
+            [int]($_.milestone -split '/')[0] 
+        } | Measure-Object -Sum).Sum
+        total_tools = $toolsData.Count
+        total_adrs = $adrsData.Count
+    }
+}
+
+# 9. Save to .meta/session-context.json
+$outputPath = ".meta\session-context.json"
+$sessionContext | ConvertTo-Json -Depth 10 | Out-File $outputPath -Encoding UTF8
+
+Write-Output "✓ Session context generated: $outputPath"
+Write-Output "  Projects: $($projectsData.Count)"
+Write-Output "  Tools: $($toolsData.Count)"
+Write-Output "  ADRs: $($adrsData.Count)"
+Write-Output "  Active: $activeProject (Milestone $($activeMilestone.Id))"
+
+if ($Verbose) {
+    Write-Output "`nPreview:"
+    Get-Content $outputPath | Select-Object -First 20
+}
+
+
+
+================================================
+FILE: list-adrs.ps1
+================================================
+ï»¿# List all Architecture Decision Records
+param([string]$Project)
+
+$registry = Get-Content ".\decisions\adr-registry.json" | ConvertFrom-Json
+
+if ($Project) {
+    $proj = $registry.projects.$Project
+    if ($proj) {
+        Write-Output "=== ADRs for $Project ==="
+        foreach ($adr in $proj.adrs) {
+            Write-Output "ADR-$($adr.id): $($adr.title) [$($adr.status)]"
+        }
+    } else {
+        Write-Output "Project not found: $Project"
+    }
+} else {
+    Write-Output "=== ALL ADRs ==="
+    foreach ($projName in $registry.projects.PSObject.Properties.Name) {
+        $proj = $registry.projects.$projName
+        if ($proj.count -gt 0) {
+            Write-Output "`n$projName ($($proj.count) ADRs):"
+            foreach ($adr in $proj.adrs) {
+                Write-Output "  ADR-$($adr.id): $($adr.title) [$($adr.status)]"
+            }
+        }
+    }
+}
+
+
+
+================================================
+FILE: list-projects.ps1
+================================================
+ï»¿# List all project tenants
+$registry = Get-Content ".meta\tenant-registry.json" | ConvertFrom-Json
+
+Write-Output "=== PROJECT TENANTS ==="
+foreach ($project in $registry.project_tenants) {
+    $status = if ($project.status -eq "active") { "ðŸŸ¢" } else { "ðŸ”´" }
+    Write-Output "$status $($project.name)"
+    Write-Output "   Namespace: $($project.namespace)"
+    Write-Output "   Supabase: $($project.supabase_url)"
+    Write-Output "   Path: $($project.repo_path)"
+    Write-Output "   Milestone: $($project.current_milestone)"
+    Write-Output ""
+}
+
+
+
+================================================
+FILE: load-memory.ps1
+================================================
+ï»¿param([string]$Namespace)
+
+if (-not $Namespace) {
+    Write-Output "Usage: .\load-memory.ps1 -Namespace <path>"
+    Write-Output "Available namespaces:"
+    $index = Get-Content ".meta\system-index.json" | ConvertFrom-Json
+    $index.namespaces | ForEach-Object { Write-Output "  $_" }
+    exit
+}
+
+# Route to correct memory location
+$memoryPath = ".\memory\" + ($Namespace -replace "^/", "" -replace "/", "\")
+
+# New structured memory paths
+if ($Namespace -eq "/system") {
+    Write-Output "=== SYSTEM MEMORY (STRUCTURED) ==="
+    Write-Output "`nCore Knowledge:"
+    Get-Content ".\memory\system\core\knowledge.md" -ErrorAction SilentlyContinue | Select-Object -First 30
+    Write-Output "`n... (use -Namespace /system/core for full)"
+    Write-Output "`nDecisions: memory/system/decisions/architectural.md"
+    Write-Output "Feedback: memory/system/feedback/improvements.md"
+    return
+}
+
+if (Test-Path $memoryPath) {
+    Write-Output "=== MEMORY: $Namespace ==="
+    Get-ChildItem $memoryPath -Recurse -File | ForEach-Object {
+        Write-Output "`n--- $($_.Name) ---"
+        Get-Content $_.FullName
+    }
+} else {
+    Write-Output "Memory namespace not found: $Namespace"
+    Write-Output "Create it with: New-Item -ItemType Directory -Path '$memoryPath' -Force"
+}
+
+
+
+
+================================================
+FILE: load-project.ps1
+================================================
+ï»¿param([string]$ProjectName)
+
+if (-not $ProjectName) {
+    Write-Output "Usage: .\load-project.ps1 -ProjectName <name>"
+    exit
+}
+
+$registry = Get-Content ".meta\tenant-registry.json" | ConvertFrom-Json
+$project = $registry.project_tenants | Where-Object { $_.name -eq $ProjectName }
+
+if (-not $project) {
+    Write-Output "Project not found: $ProjectName"
+    exit
+}
+
+Write-Output "=== LOADING PROJECT: $ProjectName ==="
+
+# Load project context
+$contextPath = ".\Projects\$ProjectName\context.md"
+if (Test-Path $contextPath) {
+    Write-Output "`n--- Context ---"
+    Get-Content $contextPath
+}
+
+# Load progress
+$progressPath = ".\Projects\$ProjectName\progress.json"
+if (Test-Path $progressPath) {
+    Write-Output "`n`n--- Progress ---"
+    $progress = Get-Content $progressPath | ConvertFrom-Json
+    Write-Output "Vision: $($progress.Vision)"
+    Write-Output "Milestones: $($progress.CompletedMilestones)/$($progress.TotalMilestones)"
+    Write-Output "`nCurrent Milestone:"
+    $current = $progress.Milestones | Where-Object { $_.Id -eq $progress.CurrentMilestoneId }
+    Write-Output "  ID: $($current.Id)"
+    Write-Output "  Name: $($current.Name)"
+    Write-Output "  Status: $($current.Status)"
+}
+
+# Show tenant info
+Write-Output "`n`n--- Tenant Info ---"
+Write-Output "Supabase: $($project.supabase_url)"
+Write-Output "Namespace: $($project.namespace)"
+Write-Output "Repo: $($project.repo_path)"
+
+Write-Output "`nâœ“ Project loaded - work in context of $ProjectName"
+
+
+
+================================================
+FILE: query-mem0.ps1
+================================================
+ï»¿# Query Mem0 Graph - v4.0
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$Query,
+    [int]$Limit = 5
+)
+
+Write-Output "=== Mem0 Graph Query ==="
+Write-Output "Query: $Query"
+Write-Output "Limit: $Limit"
+Write-Output ""
+
+$pythonCode = @"
+from mem0 import Memory
+import json
+
+m = Memory()
+results = m.search('$Query', user_id='krishna_001', limit=$Limit)
+
+if not results:
+    print('No results found for this query.')
+else:
+    for i, result in enumerate(results, 1):
+        print(f'--- Result {i}/{len(results)} ---')
+        print(result.get('memory', ''))
+        
+        # Show metadata if available
+        metadata = result.get('metadata', {})
+        if metadata:
+            print(f'\nMetadata: {json.dumps(metadata, indent=2)}')
+        print()
+"@
+
+python -c $pythonCode
+
+
+
+================================================
+FILE: switch-project.ps1
+================================================
+ï»¿param([string]$ProjectName)
+
+if (-not $ProjectName) {
+    Write-Output "Usage: .\switch-project.ps1 -ProjectName <name>"
+    exit
+}
+
+# Update system index
+$index = Get-Content ".meta\system-index.json" | ConvertFrom-Json
+$index.active_context.current_project = $ProjectName
+$index.active_context.last_active = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$index | ConvertTo-Json -Depth 5 | Out-File ".meta\system-index.json" -Encoding UTF8
+
+Write-Output "âœ“ Switched to: $ProjectName"
+Write-Output "`nLoad full context with: .\tools\load-project.ps1 -ProjectName $ProjectName"
+
+
+
+================================================
+FILE: track-metrics.ps1
+================================================
+ï»¿# Track session metrics in real-time
+# Auto-called by other tools to collect telemetry
+
+param(
+    [string]$Event,
+    [hashtable]$Data = @{}
+)
+
+# Initialize session tracking if not exists
+if (-not $env:SESSION_ID) {
+    $env:SESSION_ID = "session_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    $env:SESSION_START = Get-Date
+    $env:COMMAND_COUNT = 0
+    $env:ERROR_COUNT = 0
+    $env:CONTEXT_REQUEST_COUNT = 0
+    $env:TOOLS_USED = ""
+}
+
+# Track event
+switch ($Event) {
+    "COMMAND_EXECUTED" {
+        $env:COMMAND_COUNT = [int]$env:COMMAND_COUNT + 1
+        if ($Data.tool) {
+            $env:TOOLS_USED += "$($Data.tool),"
+        }
+    }
+    "ERROR_OCCURRED" {
+        $env:ERROR_COUNT = [int]$env:ERROR_COUNT + 1
+    }
+    "CONTEXT_REQUESTED" {
+        $env:CONTEXT_REQUEST_COUNT = [int]$env:CONTEXT_REQUEST_COUNT + 1
+    }
+}
+
+# Save event to telemetry
+$telemetryEntry = @{
+    session_id = $env:SESSION_ID
+    timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    event = $Event
+    data = $Data
+} | ConvertTo-Json -Compress
+
+Add-Content ".meta\telemetry.jsonl" -Value $telemetryEntry
+
+
+
+================================================
+FILE: update-priorities.ps1
+================================================
+ï»¿# Update priority scores based on LLM feedback
+# System learns what context is actually useful
+
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$LearningsJson
+)
+
+Write-Output "=== UPDATING PRIORITIES ==="
+
+try {
+    $learnings = $LearningsJson | ConvertFrom-Json
+} catch {
+    Write-Error "Invalid JSON format"
+    return
+}
+
+$priorityScores = Get-Content ".meta\priority-scores.json" | ConvertFrom-Json
+
+$updated = 0
+
+foreach ($learning in $learnings.learnings) {
+    $topic = $learning.topic
+    $usefulness = $learning.usefulness
+    
+    # Map usefulness to score adjustment
+    $adjustment = switch ($usefulness) {
+        "high" { 0.2 }
+        "medium" { 0.1 }
+        "low" { -0.1 }
+        "none" { -0.2 }
+        default { 0 }
+    }
+    
+    # Update or create score
+    if ($priorityScores.PSObject.Properties.Name -contains $topic) {
+        $oldScore = $priorityScores.$topic
+        $newScore = [math]::Max(0.0, [math]::Min(1.0, $oldScore + $adjustment))
+        $priorityScores.$topic = $newScore
+        Write-Output "  $topic: $([math]::Round($oldScore, 2)) â†’ $([math]::Round($newScore, 2)) ($usefulness)"
+    } else {
+        $baseScore = 0.5
+        $newScore = [math]::Max(0.0, [math]::Min(1.0, $baseScore + $adjustment))
+        $priorityScores | Add-Member -MemberType NoteProperty -Name $topic -Value $newScore
+        Write-Output "  $topic: NEW â†’ $([math]::Round($newScore, 2)) ($usefulness)"
+    }
+    
+    $updated++
+}
+
+# Save updated scores
+$priorityScores | ConvertTo-Json -Depth 10 | Out-File ".meta\priority-scores.json" -Encoding UTF8
+
+Write-Output "`nâœ“ Updated $updated priority scores"
+Write-Output "âœ“ Saved to .meta\priority-scores.json"
+Write-Output "`nSystem will use these scores in next session initialization"
+
+

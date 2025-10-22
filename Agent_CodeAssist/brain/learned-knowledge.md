@@ -1,2 +1,0 @@
-﻿# CodeAssist Knowledge Base
-
