@@ -32,7 +32,7 @@ if ($Tool -eq "repomix" -or $Tool -eq "both") {
 if ($Tool -eq "gitingest" -or $Tool -eq "both") {
     Write-Host "[2/2] Generating Gitingest context..." -ForegroundColor Green
     $gitingestOutput = "$OutputDir\gitingest-context.txt"
-    gitingest . --output $gitingestOutput 2>&1 | Out-Null
+    Start-Process -FilePath "gitingest" -ArgumentList ".", "--output", $gitingestOutput -NoNewWindow -Wait
     $size = (Get-Item $gitingestOutput).Length / 1KB
     $results += "Gitingest: $([math]::Round($size, 2)) KB"
     Write-Host "  ✓ $gitingestOutput ($([math]::Round($size, 2)) KB)" -ForegroundColor Cyan
@@ -48,3 +48,4 @@ if ($CopyToClipboard -or $Tool -eq "clipboard") {
 Write-Host "`n=== Summary ===" -ForegroundColor Cyan
 $results | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
 Write-Host "`nContext files: $OutputDir`n" -ForegroundColor Green
+
