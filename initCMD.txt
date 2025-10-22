@@ -1,14 +1,16 @@
-﻿# AgentSystem v4.0 - Graph-Powered Quick Start
+﻿# AgentSystem v3.1 - Memory-First Initialization
 
-cd D:\AgentSystem; .\start-session.ps1 -Intent general -ProjectFocus AgentSystem
+cd D:\AgentSystem; .\start-session.v3.1.ps1 -Intent general -ProjectFocus AgentSystem
 
 # After running:
-# 1. Init prompt copied to clipboard (minimal, ~2KB)
+# 1. Evolved init prompt copied to clipboard (0.75 KB, 59% smaller)
 # 2. Open NEW Perplexity thread
 # 3. Paste clipboard content
-# 4. LLM queries Mem0 graph as needed: .\tools\query-mem0.ps1 -Query "..."
-# 5. You paste results, LLM gives 3-5 commands
-# 6. Execute commands, share results, repeat
+# 4. AI queries mem0 for its own instructions
+# 5. System teaches AI from institutional memory
 
-# System learns from each session!
-# End with: .\tools\end-session.ps1 -Outcome SUCCESS -Satisfaction 5
+# v3.1 improvements:
+# - AI loads context from mem0, not files
+# - Init is instructions to query memory
+# - Foundation for autonomous architecture
+# - Rotational protocol reminders (future)
