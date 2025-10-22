@@ -1,25 +1,25 @@
-﻿{
-    "version":  "2.0-indexed",
-    "capabilities":  {
-                         "memory_tiers":  3,
-                         "total_projects":  2,
-                         "total_tools":  15
-                     },
-    "namespaces":  [
-                       "/system/core",
-                       "/system/decisions",
-                       "/projects/product-label-bot",
-                       "/projects/arin-bot-v2"
-                   ],
-    "commands":  {
-                     "load_project":  ".\\tools\\load-project.ps1 -ProjectName \u003cname\u003e",
-                     "list_projects":  ".\\tools\\list-projects.ps1",
-                     "switch_project":  ".\\tools\\switch-project.ps1 -ProjectName \u003cname\u003e",
-                     "load_memory":  ".\\tools\\load-memory.ps1 -Namespace \u003cpath\u003e"
-                 },
-    "agent_id":  "Agent_Primary",
-    "active_context":  {
-                           "current_project":  "arin-bot-v2",
-                           "last_active":  "2025-10-22 10:16:56"
-                       }
+{
+  "version": "2.0-indexed",
+  "capabilities": {
+    "memory_tiers": 3,
+    "total_projects": 2,
+    "total_tools": 15
+  },
+  "namespaces": [
+    "/system/core",
+    "/system/decisions",
+    "/projects/product-label-bot",
+    "/projects/arin-bot-v2"
+  ],
+  "commands": {
+    "load_project": ".\\tools\\load-project.ps1 -ProjectName <name>",
+    "list_projects": ".\\tools\\list-projects.ps1",
+    "switch_project": ".\\tools\\switch-project.ps1 -ProjectName <name>",
+    "load_memory": ".\\tools\\load-memory.ps1 -Namespace <path>"
+  },
+  "agent_id": "Agent_Primary",
+  "active_context": {
+    "current_project": "arin-bot-v2",
+    "last_active": "2025-10-22 15:05:56"
+  }
 }

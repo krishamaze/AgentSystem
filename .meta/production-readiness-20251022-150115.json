@@ -1,25 +1,25 @@
-﻿{
-    "security":  {
-                     "env_file_secured":  "PARTIALLY",
-                     "gitignore_protected":  true,
-                     "env_file_finding":  "D:\\AgentSystem\\.meta\\security-finding-env-permissions.md",
-                     "hardcoded_secrets":  "FOUND"
-                 },
-    "timestamp":  "2025-10-22 15:01:15",
-    "configuration":  {
-                          "total_tools":  14,
-                          "json_files_valid":  6,
-                          "total_projects":  3,
-                          "json_files_invalid":  0
-                      },
-    "findings_to_resolve":  [
-                                "Complete .env file permission fix (requires Administrator)",
-                                "Review and remove hardcoded secrets"
-                            ],
-    "system":  {
-                   "execution_policy":  "RemoteSigned",
-                   "powershell_version":  "5.1.26100.6899",
-                   "os":  null
-               },
-    "status":  "READY_WITH_FINDINGS"
+{
+  "security": {
+    "env_file_secured": "PARTIALLY",
+    "gitignore_protected": true,
+    "env_file_finding": "D:\\AgentSystem\\.meta\\security-finding-env-permissions.md",
+    "hardcoded_secrets": "FOUND"
+  },
+  "timestamp": "2025-10-22 15:01:15",
+  "configuration": {
+    "total_tools": 14,
+    "json_files_valid": 6,
+    "total_projects": 3,
+    "json_files_invalid": 0
+  },
+  "findings_to_resolve": [
+    "Complete .env file permission fix (requires Administrator)",
+    "Review and remove hardcoded secrets"
+  ],
+  "system": {
+    "execution_policy": "RemoteSigned",
+    "powershell_version": "5.1.26100.6899",
+    "os": null
+  },
+  "status": "READY_WITH_FINDINGS"
 }

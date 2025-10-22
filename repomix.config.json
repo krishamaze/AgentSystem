@@ -1,0 +1,29 @@
+﻿{
+  "output": {
+    "filePath": "repomix-output.txt",
+    "style": "plain",
+    "removeComments": false,
+    "showLineNumbers": false,
+    "topFilesLength": 5
+  },
+  "ignore": {
+    "customPatterns": [
+      "*.log",
+      "node_modules/**",
+      "*.pyc",
+      "__pycache__/**",
+      ".context/**",
+      "repomix-output.*",
+      "agentsystem-context.txt",
+      "context.txt",
+      "*-digest.txt",
+      "README-generated.md",
+      ".git/**",
+      "supabase/.temp/**",
+      ".meta/**"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}

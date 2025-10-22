@@ -1,60 +1,60 @@
-﻿{
-    "intent_profiles":  {
-                            "feature-dev":  {
-                                                "P1_allocation":  1000,
-                                                "tools_priority":  [
-                                                                       "create-adr",
-                                                                       "load-project",
-                                                                       "switch-project"
-                                                                   ],
-                                                "memory_priority":  [
-                                                                        "architecture",
-                                                                        "patterns",
-                                                                        "decisions"
-                                                                    ]
-                                            },
-                            "debugging":  {
-                                              "P1_allocation":  1500,
-                                              "tools_priority":  [
-                                                                     "check-memory",
-                                                                     "load-project",
-                                                                     "list-adrs"
-                                                                 ],
-                                              "memory_priority":  [
-                                                                      "errors",
-                                                                      "troubleshooting",
-                                                                      "logs"
-                                                                  ]
-                                          },
-                            "production-hardening":  {
-                                                         "P1_allocation":  1200,
-                                                         "tools_priority":  [
-                                                                                "deploy",
-                                                                                "backup",
-                                                                                "audit",
-                                                                                "security"
-                                                                            ],
-                                                         "memory_priority":  [
-                                                                                 "hardening",
-                                                                                 "deployment",
-                                                                                 "monitoring"
-                                                                             ]
-                                                     }
-                        },
-    "version":  "3.0-autonomous",
-    "learning":  {
-                     "satisfaction_threshold":  3.5,
-                     "optimization_threshold":  0.7,
-                     "review_frequency":  10,
-                     "enabled":  true
-                 },
-    "bandwidth":  {
-                      "total_bytes":  3000,
-                      "P1_strategy":  "intent-based",
-                      "P2_strategy":  "fill-remaining",
-                      "adaptive":  true,
-                      "P0_bytes":  500
-                  },
-    "last_updated":  "2025-10-22 14:16:50",
-    "updated_by":  "SYSTEM_INIT"
+{
+  "intent_profiles": {
+    "feature-dev": {
+      "P1_allocation": 1000,
+      "tools_priority": [
+        "create-adr",
+        "load-project",
+        "switch-project"
+      ],
+      "memory_priority": [
+        "architecture",
+        "patterns",
+        "decisions"
+      ]
+    },
+    "debugging": {
+      "P1_allocation": 1500,
+      "tools_priority": [
+        "check-memory",
+        "load-project",
+        "list-adrs"
+      ],
+      "memory_priority": [
+        "errors",
+        "troubleshooting",
+        "logs"
+      ]
+    },
+    "production-hardening": {
+      "P1_allocation": 1200,
+      "tools_priority": [
+        "deploy",
+        "backup",
+        "audit",
+        "security"
+      ],
+      "memory_priority": [
+        "hardening",
+        "deployment",
+        "monitoring"
+      ]
+    }
+  },
+  "version": "3.0-autonomous",
+  "learning": {
+    "satisfaction_threshold": 3.5,
+    "optimization_threshold": 0.7,
+    "review_frequency": 10,
+    "enabled": true
+  },
+  "bandwidth": {
+    "total_bytes": 3000,
+    "P1_strategy": "intent-based",
+    "P2_strategy": "fill-remaining",
+    "adaptive": true,
+    "P0_bytes": 500
+  },
+  "last_updated": "2025-10-22 14:16:50",
+  "updated_by": "SYSTEM_INIT"
 }

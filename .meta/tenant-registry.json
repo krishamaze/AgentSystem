@@ -1,41 +1,41 @@
-﻿{
-    "system_tenant":  {
-                          "namespace":  "/system",
-                          "id":  "fihvhtoqviivmasjaqxc",
-                          "type":  "system",
-                          "supabase_url":  "https://fihvhtoqviivmasjaqxc.supabase.co"
-                      },
-    "project_tenants":  [
-                            {
-                                "id":  "fihvhtoqviivmasjaqxc",
-                                "supabase_url":  "https://fihvhtoqviivmasjaqxc.supabase.co",
-                                "current_milestone":  3,
-                                "namespace":  "/projects/AgentSystem",
-                                "name":  "AgentSystem",
-                                "status":  "active",
-                                "repo_path":  "D:\\AgentSystem",
-                                "owner":  "krishna_001"
-                            },
-                            {
-                                "id":  "pnbnrlupucijorityajq",
-                                "name":  "product-label-bot",
-                                "supabase_url":  "https://pnbnrlupucijorityajq.supabase.co",
-                                "current_milestone":  1,
-                                "namespace":  "/projects/product-label-bot",
-                                "repo_path":  "D:\\product-label-bot",
-                                "status":  "active",
-                                "owner":  "krishna_001"
-                            },
-                            {
-                                "id":  "unknown",
-                                "name":  "arin-bot-v2",
-                                "supabase_url":  "unknown",
-                                "current_milestone":  1,
-                                "namespace":  "/projects/arin-bot-v2",
-                                "repo_path":  "D:\\arin-bot-v2",
-                                "status":  "active",
-                                "owner":  "krishna_001"
-                            }
-                        ],
-    "last_updated":  "2025-10-22 10:56:27"
+{
+  "system_tenant": {
+    "namespace": "/system",
+    "id": "fihvhtoqviivmasjaqxc",
+    "type": "system",
+    "supabase_url": "https://fihvhtoqviivmasjaqxc.supabase.co"
+  },
+  "project_tenants": [
+    {
+      "id": "fihvhtoqviivmasjaqxc",
+      "supabase_url": "https://fihvhtoqviivmasjaqxc.supabase.co",
+      "current_milestone": 3,
+      "namespace": "/projects/AgentSystem",
+      "name": "AgentSystem",
+      "status": "active",
+      "repo_path": "D:\\AgentSystem",
+      "owner": "krishna_001"
+    },
+    {
+      "id": "pnbnrlupucijorityajq",
+      "name": "product-label-bot",
+      "supabase_url": "https://pnbnrlupucijorityajq.supabase.co",
+      "current_milestone": 1,
+      "namespace": "/projects/product-label-bot",
+      "repo_path": "D:\\product-label-bot",
+      "status": "active",
+      "owner": "krishna_001"
+    },
+    {
+      "id": "unknown",
+      "name": "arin-bot-v2",
+      "supabase_url": "unknown",
+      "current_milestone": 1,
+      "namespace": "/projects/arin-bot-v2",
+      "repo_path": "D:\\arin-bot-v2",
+      "status": "active",
+      "owner": "krishna_001"
+    }
+  ],
+  "last_updated": "2025-10-22 10:56:27"
 }

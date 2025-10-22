@@ -1,159 +1,164 @@
-﻿{
-    "memory_namespaces":  [
-                              "/system/core",
-                              "/system/decisions",
-                              "/system/feedback",
-                              "/projects/AgentSystem",
-                              "/projects/product-label-bot",
-                              "/projects/arin-bot-v2"
-                          ],
-    "quick_stats":  {
-                        "total_milestones":  15,
-                        "completed_milestones":  5,
-                        "total_tools":  14,
-                        "total_adrs":  3,
-                        "total_projects":  3,
-                        "active_projects":  3
-                    },
-    "projects":  [
-                     {
-                         "percentage":  83,
-                         "supabase":  "https://fihvhtoqviivmasjaqxc.supabase.co",
-                         "name":  "AgentSystem",
-                         "current_milestone_name":  "Production hardening",
-                         "status":  "active",
-                         "current_milestone_id":  6,
-                         "path":  null,
-                         "milestone":  "5/6"
-                     },
-                     {
-                         "percentage":  0,
-                         "supabase":  "https://pnbnrlupucijorityajq.supabase.co",
-                         "name":  "product-label-bot",
-                         "current_milestone_name":  "Complete OCR integration \u0026 testing",
-                         "status":  "active",
-                         "current_milestone_id":  1,
-                         "path":  null,
-                         "milestone":  "0/4"
-                     },
-                     {
-                         "percentage":  0,
-                         "supabase":  "unknown",
-                         "name":  "arin-bot-v2",
-                         "current_milestone_name":  "Complete Gemini integration",
-                         "status":  "active",
-                         "current_milestone_id":  1,
-                         "path":  null,
-                         "milestone":  "0/5"
-                     }
-                 ],
-    "version":  "2.0-dynamic",
-    "adrs":  [
-                 {
-                     "status":  "Accepted",
-                     "title":  "Index-Based Multi-Tenant Architecture",
-                     "project":  "AgentSystem",
-                     "id":  "001"
-                 },
-                 {
-                     "status":  "Accepted",
-                     "title":  "User Management and Project Ownership",
-                     "project":  "AgentSystem",
-                     "id":  "002"
-                 },
-                 {
-                     "status":  "Accepted",
-                     "title":  "Three-Tier Memory Structure",
-                     "project":  "AgentSystem",
-                     "id":  "003"
-                 }
-             ],
-    "system_snapshot":  {
-                            "active_project":  "arin-bot-v2",
-                            "timestamp":  "2025-10-22 14:42:48",
-                            "projects_count":  3,
-                            "total_adrs":  3,
-                            "last_session":  "Last session: session-20251022",
-                            "last_active":  "2025-10-22 10:16:56"
-                        },
-    "generated_at":  "2025-10-22 14:42:48",
-    "active_milestone":  {
-                             "status":  "IN_PROGRESS",
-                             "description":  null,
-                             "project":  "arin-bot-v2",
-                             "id":  1,
-                             "name":  "Complete Gemini integration"
-                         },
-    "tools":  [
-                  {
-                      "name":  "apply-optimization.ps1",
-                      "syntax":  "-true \u003cvalue\u003e",
-                      "purpose":  "Apply LLM optimization decision to system"
-                  },
-                  {
-                      "name":  "check-memory.ps1",
-                      "syntax":  "-Project \u003cvalue\u003e -Query \u003cvalue\u003e",
-                      "purpose":  "Memory-First Protocol - Check before assuming"
-                  },
-                  {
-                      "name":  "complete-milestone.ps1",
-                      "syntax":  "-true \u003cvalue\u003e",
-                      "purpose":  "Complete milestone and auto-sync"
-                  },
-                  {
-                      "name":  "context-request.ps1",
-                      "syntax":  "-true \u003cvalue\u003e",
-                      "purpose":  "Request additional context mid-session"
-                  },
-                  {
-                      "name":  "create-adr.ps1",
-                      "syntax":  "-true \u003cvalue\u003e",
-                      "purpose":  "Create new Architecture Decision Record"
-                  },
-                  {
-                      "name":  "generate-optimization-report.ps1",
-                      "syntax":  "none",
-                      "purpose":  "Generate self-assessment report for LLM optimization"
-                  },
-                  {
-                      "name":  "generate-session-index.ps1",
-                      "syntax":  "-Verbose \u003cvalue\u003e",
-                      "purpose":  "Generate dynamic session context index"
-                  },
-                  {
-                      "name":  "list-adrs.ps1",
-                      "syntax":  "-Project \u003cvalue\u003e",
-                      "purpose":  "List all Architecture Decision Records"
-                  },
-                  {
-                      "name":  "list-projects.ps1",
-                      "syntax":  "none",
-                      "purpose":  "List all project tenants"
-                  },
-                  {
-                      "name":  "load-memory.ps1",
-                      "syntax":  "-Namespace \u003cvalue\u003e",
-                      "purpose":  "Tool: load-memory"
-                  },
-                  {
-                      "name":  "load-project.ps1",
-                      "syntax":  "-ProjectName \u003cvalue\u003e",
-                      "purpose":  "Tool: load-project"
-                  },
-                  {
-                      "name":  "switch-project.ps1",
-                      "syntax":  "-ProjectName \u003cvalue\u003e",
-                      "purpose":  "Tool: switch-project"
-                  },
-                  {
-                      "name":  "track-metrics.ps1",
-                      "syntax":  "-Event \u003cvalue\u003e -Data \u003cvalue\u003e",
-                      "purpose":  "Track session metrics in real-time"
-                  },
-                  {
-                      "name":  "update-priorities.ps1",
-                      "syntax":  "-true \u003cvalue\u003e",
-                      "purpose":  "Update priority scores based on LLM feedback"
-                  }
-              ]
+{
+  "memory_namespaces": [
+    "/system/core",
+    "/system/decisions",
+    "/system/feedback",
+    "/projects/AgentSystem",
+    "/projects/product-label-bot",
+    "/projects/arin-bot-v2"
+  ],
+  "quick_stats": {
+    "total_milestones": 15,
+    "completed_milestones": 6,
+    "total_tools": 15,
+    "total_adrs": 3,
+    "total_projects": 3,
+    "active_projects": 3
+  },
+  "projects": [
+    {
+      "percentage": 100,
+      "supabase": "https://fihvhtoqviivmasjaqxc.supabase.co",
+      "name": "AgentSystem",
+      "current_milestone_name": null,
+      "status": "active",
+      "current_milestone_id": 7,
+      "path": null,
+      "milestone": "6/6"
+    },
+    {
+      "percentage": 0,
+      "supabase": "https://pnbnrlupucijorityajq.supabase.co",
+      "name": "product-label-bot",
+      "current_milestone_name": "Complete OCR integration & testing",
+      "status": "active",
+      "current_milestone_id": 1,
+      "path": null,
+      "milestone": "0/4"
+    },
+    {
+      "percentage": 0,
+      "supabase": "unknown",
+      "name": "arin-bot-v2",
+      "current_milestone_name": "Complete Gemini integration",
+      "status": "active",
+      "current_milestone_id": 1,
+      "path": null,
+      "milestone": "0/5"
+    }
+  ],
+  "version": "2.0-dynamic",
+  "adrs": [
+    {
+      "status": "Accepted",
+      "title": "Index-Based Multi-Tenant Architecture",
+      "project": "AgentSystem",
+      "id": "001"
+    },
+    {
+      "status": "Accepted",
+      "title": "User Management and Project Ownership",
+      "project": "AgentSystem",
+      "id": "002"
+    },
+    {
+      "status": "Accepted",
+      "title": "Three-Tier Memory Structure",
+      "project": "AgentSystem",
+      "id": "003"
+    }
+  ],
+  "system_snapshot": {
+    "active_project": "arin-bot-v2",
+    "timestamp": "2025-10-22 15:17:19",
+    "projects_count": 3,
+    "total_adrs": 3,
+    "last_session": "Last session: session-20251022",
+    "last_active": "2025-10-22 15:05:56"
+  },
+  "generated_at": "2025-10-22 15:17:19",
+  "active_milestone": {
+    "status": "IN_PROGRESS",
+    "description": null,
+    "project": "arin-bot-v2",
+    "id": 1,
+    "name": "Complete Gemini integration"
+  },
+  "tools": [
+    {
+      "name": "apply-optimization.ps1",
+      "syntax": "-true <value>",
+      "purpose": "Apply LLM optimization decision to system"
+    },
+    {
+      "name": "check-memory.ps1",
+      "syntax": "-Project <value> -Query <value>",
+      "purpose": "Memory-First Protocol - Check before assuming"
+    },
+    {
+      "name": "complete-milestone.ps1",
+      "syntax": "-true <value>",
+      "purpose": "Complete milestone and auto-sync"
+    },
+    {
+      "name": "context-request.ps1",
+      "syntax": "-true <value>",
+      "purpose": "Request additional context mid-session"
+    },
+    {
+      "name": "create-adr.ps1",
+      "syntax": "-true <value>",
+      "purpose": "Create new Architecture Decision Record"
+    },
+    {
+      "name": "end-session.ps1",
+      "syntax": "",
+      "purpose": "End session and capture outcome feedback"
+    },
+    {
+      "name": "generate-optimization-report.ps1",
+      "syntax": "none",
+      "purpose": "Generate self-assessment report for LLM optimization"
+    },
+    {
+      "name": "generate-session-index.ps1",
+      "syntax": "-Verbose <value>",
+      "purpose": "Generate dynamic session context index"
+    },
+    {
+      "name": "list-adrs.ps1",
+      "syntax": "-Project <value>",
+      "purpose": "List all Architecture Decision Records"
+    },
+    {
+      "name": "list-projects.ps1",
+      "syntax": "none",
+      "purpose": "List all project tenants"
+    },
+    {
+      "name": "load-memory.ps1",
+      "syntax": "-Namespace <value>",
+      "purpose": "Tool: load-memory"
+    },
+    {
+      "name": "load-project.ps1",
+      "syntax": "-ProjectName <value>",
+      "purpose": "Tool: load-project"
+    },
+    {
+      "name": "switch-project.ps1",
+      "syntax": "-ProjectName <value>",
+      "purpose": "Tool: switch-project"
+    },
+    {
+      "name": "track-metrics.ps1",
+      "syntax": "-Event <value> -Data <value>",
+      "purpose": "Track session metrics in real-time"
+    },
+    {
+      "name": "update-priorities.ps1",
+      "syntax": "-true <value>",
+      "purpose": "Update priority scores based on LLM feedback"
+    }
+  ]
 }
