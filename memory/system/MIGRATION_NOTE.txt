@@ -1,0 +1,5 @@
+﻿# Note: sync_all_learnings.py now syncs from:
+# - memory/system/core/knowledge.md
+# - memory/system/decisions/architectural.md  
+# - memory/system/feedback/improvements.md
+# Original brain preserved at: Agent_Primary/brain/learned-knowledge.md

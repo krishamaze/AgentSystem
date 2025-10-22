@@ -1,0 +1,14 @@
+﻿{
+    "last_migrated":  "2025-10-22 11:06:46",
+    "files":  {
+                  "decisions":  "memory/system/decisions/architectural.md",
+                  "core":  "memory/system/core/knowledge.md",
+                  "feedback":  "memory/system/feedback/improvements.md"
+              },
+    "total_learnings":  55,
+    "structure":  {
+                      "decisions":  "Architectural and system design decisions",
+                      "core":  "General knowledge, tools, protocols",
+                      "feedback":  "Mistakes, patterns, self-corrections"
+                  }
+}

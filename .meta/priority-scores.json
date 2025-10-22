@@ -1,0 +1,14 @@
+﻿{
+    "memory_categories":  {
+                              "debugging":  0.7,
+                              "production":  0.8,
+                              "architecture":  0.6
+                          },
+    "tools":  {
+                  "load-project.ps1":  0.9,
+                  "check-memory.ps1":  0.8,
+                  "list-adrs.ps1":  0.7,
+                  "complete-milestone.ps1":  0.5,
+                  "generate-session-index.ps1":  0.6
+              }
+}

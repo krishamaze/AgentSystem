@@ -1,0 +1,21 @@
+﻿# QUICK REFERENCE - AgentSystem
+
+## Daily Workflow
+.\generate-init-prompt.ps1      → Start new Perplexity thread
+.\memory-commands.ps1 -Command 1 → Load full brain
+python system_status.py          → Check health
+
+## Emergency
+.\EMERGENCY_RECOVERY.ps1         → Restore critical scripts
+.\backup-env.ps1                 → Backup credentials
+
+## Memory Commands
+-Command 1 → Full brain (54KB)
+-Command 2 → Recent Supabase learnings
+-Command 3 → Mem0 graph memories
+-Command 4 → System status
+
+## File Locations
+Brain: .\Agent_Primary\brain\learned-knowledge.md
+Env: .\.env (backed up in .\backups)
+Edge Function: https://fihvhtoqviivmasjaqxc.supabase.co/functions/v1/get-agent-memory

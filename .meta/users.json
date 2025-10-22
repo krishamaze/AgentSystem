@@ -1,0 +1,23 @@
+﻿{
+    "primary_user":  "krishna_001",
+    "users":  [
+                  {
+                      "id":  "krishna_001",
+                      "name":  "Krishna",
+                      "preferences":  {
+                                          "batch_mode":  true,
+                                          "interaction_style":  "direct",
+                                          "timezone":  "IST",
+                                          "location":  "Coimbatore, TN"
+                                      },
+                      "owned_projects":  [
+                                             "AgentSystem",
+                                             "product-label-bot",
+                                             "arin-bot-v2"
+                                         ],
+                      "created":  "2025-10-22",
+                      "role":  "owner"
+                  }
+              ],
+    "last_updated":  "2025-10-22 10:54:28"
+}

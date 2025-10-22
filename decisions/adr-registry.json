@@ -1,0 +1,41 @@
+﻿{
+    "projects":  {
+                     "product-label-bot":  {
+                                               "path":  "memory/tenants/product-label-bot/decisions",
+                                               "count":  0,
+                                               "adrs":  [
+
+                                                        ]
+                                           },
+                     "AgentSystem":  {
+                                         "path":  "memory/tenants/AgentSystem/decisions",
+                                         "count":  3,
+                                         "adrs":  [
+                                                      {
+                                                          "status":  "Accepted",
+                                                          "title":  "Index-Based Multi-Tenant Architecture",
+                                                          "id":  "001"
+                                                      },
+                                                      {
+                                                          "status":  "Accepted",
+                                                          "title":  "User Management and Project Ownership",
+                                                          "id":  "002"
+                                                      },
+                                                      {
+                                                          "status":  "Accepted",
+                                                          "title":  "Three-Tier Memory Structure",
+                                                          "id":  "003"
+                                                      }
+                                                  ]
+                                     },
+                     "arin-bot-v2":  {
+                                         "path":  "memory/tenants/arin-bot-v2/decisions",
+                                         "count":  0,
+                                         "adrs":  [
+
+                                                  ]
+                                     }
+                 },
+    "last_updated":  "2025-10-22 11:09:32",
+    "total_adrs":  3
+}

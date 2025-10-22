@@ -1,0 +1,295 @@
+<#
+.SYNOPSIS
+    Intelligent Agent Resurrection System (v2.1 - Roadmap-Aware)
+.DESCRIPTION
+    Analyzes agent brain state AND project planning data to provide context-aware
+    recommendations with milestone-driven priorities.
+.EXAMPLE
+    .\resurrect-me.ps1
+    Displays agent status, project milestones, and roadmap-aware recommendations.
+#>
+
+function Parse-BrainFiles {
+    param([string]$AgentName = "Agent_Primary")
+    
+    $brainPath = "D:\AgentSystem\$AgentName\brain"
+    $result = @{
+        AgentName = $AgentName
+        Learnings = 0
+        Tasks = @()
+        Projects = @()
+        EvolutionEntries = @()
+    }
+    
+    # Parse learned-knowledge.md
+    if (Test-Path "$brainPath\learned-knowledge.md") {
+        $content = Get-Content "$brainPath\learned-knowledge.md" -Raw
+        $result.Learnings = ([regex]::Matches($content, '(?m)^## Learning:')).Count
+    }
+    
+    # Parse evolution-log.md (last 5 entries)
+    if (Test-Path "$brainPath\evolution-log.md") {
+        $lines = Get-Content "$brainPath\evolution-log.md" | Where-Object { $_ -match '^\s*-\s*\[' }
+        $result.EvolutionEntries = $lines | Select-Object -Last 5
+    }
+    
+    # Extract pending tasks
+    $allContent = ""
+    Get-ChildItem "$brainPath\*.md" -ErrorAction SilentlyContinue | ForEach-Object {
+        $allContent += Get-Content $_.FullName -Raw
+    }
+    
+    $taskPatterns = 'TODO:|Pending:|Next:|CRITICAL:|Phase \d+:|Will be|Expected|Awaiting'
+    $matches = [regex]::Matches($allContent, "(?m)^.*?($taskPatterns).*$")
+    $result.Tasks = $matches | ForEach-Object { $_.Value.Trim() } | Select-Object -First 10
+    
+    # Scan Projects directory with planning data
+    $projectsPath = "D:\AgentSystem\Projects"
+    if (Test-Path $projectsPath) {
+        $result.Projects = Get-ChildItem $projectsPath -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+            $daysSince = ((Get-Date) - $_.LastWriteTime).TotalDays
+            $projectData = @{
+                Name = $_.Name
+                Path = $_.FullName
+                LastUpdate = $_.LastWriteTime
+                DaysSinceUpdate = [math]::Round($daysSince, 0)
+                HasRoadmap = $false
+                Vision = $null
+                CurrentMilestone = $null
+                Progress = $null
+                TotalMilestones = 0
+                CompletedMilestones = 0
+            }
+            
+            # Load progress.json if exists
+            $progressFile = Join-Path $_.FullName "progress.json"
+            if (Test-Path $progressFile) {
+                try {
+                    $progress = Get-Content $progressFile | ConvertFrom-Json
+                    $projectData.HasRoadmap = $true
+                    $projectData.Vision = $progress.Vision
+                    $projectData.TotalMilestones = $progress.TotalMilestones
+                    $projectData.CompletedMilestones = $progress.CompletedMilestones
+                    $projectData.Progress = if($progress.TotalMilestones -gt 0){
+                        [math]::Round(($progress.CompletedMilestones / $progress.TotalMilestones) * 100, 0)
+                    } else { 0 }
+                    
+                    # Get current milestone
+                    $currentM = $progress.Milestones | Where-Object { $_.Id -eq $progress.CurrentMilestoneId }
+                    if ($currentM) {
+                        $projectData.CurrentMilestone = @{
+                            Id = $currentM.Id
+                            Name = $currentM.Name
+                            Status = $currentM.Status
+                            StartDate = $currentM.StartDate
+                        }
+                    }
+                } catch {
+                    # Invalid JSON, skip
+                }
+            }
+            
+            $projectData
+        } | Sort-Object DaysSinceUpdate | Select-Object -First 5
+    }
+    
+    return $result
+}
+
+function Generate-RoadmapRecommendations {
+    param($State)
+    
+    $recommendations = @()
+    
+    # Priority 1: Continue in-progress milestones
+    $inProgressProjects = $State.Projects | Where-Object { 
+        $_.HasRoadmap -and $_.CurrentMilestone -and $_.CurrentMilestone.Status -eq "IN_PROGRESS" 
+    }
+    
+    foreach ($proj in $inProgressProjects) {
+        $recommendations += @{
+            Priority = 1
+            Type = "Milestone"
+            Project = $proj.Name
+            Action = "Continue Milestone $($proj.CurrentMilestone.Id): $($proj.CurrentMilestone.Name)"
+            Reason = "In progress since $($proj.CurrentMilestone.StartDate)"
+            Command = "cd D:\$($proj.Name); # Continue milestone work"
+        }
+    }
+    
+    # Priority 2: Start next pending milestone
+    $pendingProjects = $State.Projects | Where-Object { 
+        $_.HasRoadmap -and $_.CurrentMilestone -and $_.CurrentMilestone.Status -eq "PENDING" 
+    }
+    
+    foreach ($proj in $pendingProjects) {
+        $recommendations += @{
+            Priority = 2
+            Type = "Milestone"
+            Project = $proj.Name
+            Action = "Start Milestone $($proj.CurrentMilestone.Id): $($proj.CurrentMilestone.Name)"
+            Reason = "Next milestone ready to begin"
+            Command = ".\update-project-progress.ps1 -ProjectName '$($proj.Name)' -MilestoneId $($proj.CurrentMilestone.Id) -Status 'IN_PROGRESS'"
+        }
+    }
+    
+    # Priority 3: Projects without roadmaps
+    $noRoadmap = $State.Projects | Where-Object { -not $_.HasRoadmap -and $_.DaysSinceUpdate -lt 7 }
+    
+    foreach ($proj in $noRoadmap) {
+        $recommendations += @{
+            Priority = 3
+            Type = "Planning"
+            Project = $proj.Name
+            Action = "Define project roadmap for $($proj.Name)"
+            Reason = "Project has no milestone plan"
+            Command = ".\project-init.ps1 -ProjectName '$($proj.Name)' -ProjectPath 'D:\$($proj.Name)'"
+        }
+    }
+    
+    # Priority 4: Stale projects
+    $stale = $State.Projects | Where-Object { $_.DaysSinceUpdate -gt 7 }
+    
+    if ($stale) {
+        $recommendations += @{
+            Priority = 4
+            Type = "Maintenance"
+            Project = $stale[0].Name
+            Action = "Review stale project: $($stale[0].Name)"
+            Reason = "No updates for $($stale[0].DaysSinceUpdate) days"
+            Command = "cd D:\$($stale[0].Name); git status"
+        }
+    }
+    
+    return $recommendations | Sort-Object Priority | Select-Object -First 3
+}
+
+function Show-ResurrectionMenu {
+    Clear-Host
+    
+    $state = Parse-BrainFiles
+    $recommendations = Generate-RoadmapRecommendations -State $state
+    
+    Write-Host "-------------------------------------------------------" -ForegroundColor Cyan
+    Write-Host " ?? AGENT RESURRECTION: $($state.AgentName) v2.1" -ForegroundColor Yellow
+    Write-Host "-------------------------------------------------------" -ForegroundColor Cyan
+    
+    Write-Host "`n?? BRAIN STATE SUMMARY" -ForegroundColor Green
+    Write-Host "  Learnings: $($state.Learnings)" -ForegroundColor White
+    Write-Host "  Pending Tasks: $($state.Tasks.Count)" -ForegroundColor White
+    Write-Host "  Active Projects: $($state.Projects.Count)" -ForegroundColor White
+    
+    # Project milestones summary
+    if ($state.Projects.Count -gt 0) {
+        Write-Host "`n?? PROJECT MILESTONES" -ForegroundColor Yellow
+        
+        foreach ($proj in $state.Projects) {
+            if ($proj.HasRoadmap) {
+                $color = if ($proj.Progress -ge 75) { "Green" } elseif ($proj.Progress -ge 50) { "Cyan" } elseif ($proj.Progress -ge 25) { "Yellow" } else { "Gray" }
+                
+                Write-Host "`n  ?? $($proj.Name)" -ForegroundColor White
+                Write-Host "     Progress: $($proj.CompletedMilestones)/$($proj.TotalMilestones) milestones ($($proj.Progress)%)" -ForegroundColor $color
+                
+                if ($proj.CurrentMilestone) {
+                    $statusColor = switch ($proj.CurrentMilestone.Status) {
+                        "IN_PROGRESS" { "Cyan" }
+                        "PENDING" { "Gray" }
+                        "COMPLETE" { "Green" }
+                        "BLOCKED" { "Red" }
+                    }
+                    Write-Host "     Current: Milestone $($proj.CurrentMilestone.Id) - $($proj.CurrentMilestone.Name)" -ForegroundColor White
+                    Write-Host "     Status: $($proj.CurrentMilestone.Status)" -ForegroundColor $statusColor
+                }
+            } else {
+                Write-Host "`n  ?? $($proj.Name)" -ForegroundColor White
+                Write-Host "     ? No roadmap defined" -ForegroundColor Yellow
+            }
+        }
+    }
+    
+    # Roadmap-aware recommendations
+    if ($recommendations.Count -gt 0) {
+        Write-Host "`n?? ROADMAP-AWARE RECOMMENDATIONS" -ForegroundColor Yellow
+        
+        $index = 1
+        foreach ($rec in $recommendations) {
+            $typeIcon = switch ($rec.Type) {
+                "Milestone" { "??" }
+                "Planning" { "??" }
+                "Maintenance" { "??" }
+                default { "•" }
+            }
+            
+            Write-Host "`n  [$index] $typeIcon $($rec.Action)" -ForegroundColor Cyan
+            Write-Host "      Reason: $($rec.Reason)" -ForegroundColor Gray
+            if ($rec.Command) {
+                Write-Host "      Command: $($rec.Command)" -ForegroundColor DarkGray
+            }
+            $index++
+        }
+    }
+    
+    if ($state.Tasks.Count -gt 0) {
+        Write-Host "`n?? TOP PENDING TASKS" -ForegroundColor Yellow
+        $state.Tasks | Select-Object -First 3 | ForEach-Object { 
+            $priority = if ($_ -match 'CRITICAL') { "Red" } elseif ($_ -match 'TODO|Pending') { "Yellow" } else { "Cyan" }
+            Write-Host "  • $_" -ForegroundColor $priority
+        }
+    }
+    
+    Write-Host "`n?? LATEST EVOLUTION" -ForegroundColor Yellow
+    $state.EvolutionEntries | Select-Object -Last 3 | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
+    
+    Write-Host "`n-------------------------------------------------------" -ForegroundColor Cyan
+    Write-Host "OPTIONS:" -ForegroundColor Green
+    Write-Host "  [1] Execute top recommendation" -ForegroundColor White
+    Write-Host "  [2] View all project milestones" -ForegroundColor White
+    Write-Host "  [3] View all pending tasks" -ForegroundColor White
+    Write-Host "  [4] Full brain dump (legacy)" -ForegroundColor White
+    Write-Host "  [5] Exit" -ForegroundColor White
+    Write-Host "-------------------------------------------------------" -ForegroundColor Cyan
+    
+    $choice = Read-Host "`nSelect option"
+    
+    switch ($choice) {
+        "1" { 
+            if ($recommendations.Count -gt 0) {
+                Write-Host "`n?? EXECUTING: $($recommendations[0].Action)" -ForegroundColor Green
+                Write-Host "Command: $($recommendations[0].Command)" -ForegroundColor Cyan
+                Write-Host "`nCopy and execute the command above to proceed." -ForegroundColor Yellow
+            } else {
+                Write-Host "`n? No recommendations available" -ForegroundColor Yellow
+            }
+        }
+        "2" { 
+            Write-Host "`n?? ALL PROJECT MILESTONES:" -ForegroundColor Yellow
+            $state.Projects | ForEach-Object { 
+                Write-Host "`n  $($_.Name)"
+                if ($_.HasRoadmap) {
+                    Write-Host "    Vision: $($_.Vision)" -ForegroundColor Gray
+                    Write-Host "    Progress: $($_.CompletedMilestones)/$($_.TotalMilestones) ($($_.Progress)%)" -ForegroundColor Cyan
+                    if ($_.CurrentMilestone) {
+                        Write-Host "    Current Milestone: $($_.CurrentMilestone.Name) [$($_.CurrentMilestone.Status)]" -ForegroundColor White
+                    }
+                } else {
+                    Write-Host "    No roadmap - run project-init.ps1" -ForegroundColor Yellow
+                }
+            }
+        }
+        "3" { 
+            Write-Host "`n?? ALL PENDING TASKS:" -ForegroundColor Yellow
+            $state.Tasks | ForEach-Object { Write-Host "  • $_" }
+        }
+        "4" { 
+            Write-Host "`n=== FULL BRAIN DUMP ===" -ForegroundColor Cyan
+            Get-ChildItem "D:\AgentSystem\$($state.AgentName)\brain\*.md" | ForEach-Object {
+                Write-Host "`n=== $($_.Name) ===" -ForegroundColor Yellow
+                Get-Content $_.FullName
+            }
+        }
+        "5" { exit }
+    }
+}
+
+# Execute
+Show-ResurrectionMenu

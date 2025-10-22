@@ -1,4 +1,4 @@
-# ============================================
+﻿# ============================================
 # INTELLIGENT RESURRECTION SYSTEM - PHASE 1
 # Parser Functions Module
 # ============================================
@@ -123,7 +123,7 @@ function Test-Parser {
 }
 
 # Export functions
-Export-ModuleMember -Function Parse-BrainFiles, Test-Parser
+# Export-ModuleMember removed - not needed for dot-sourced scripts
 
 
 function Extract-PendingTasks {
@@ -655,7 +655,7 @@ function Test-Recommendations {
     Write-Host "? Recommendations generated: $($recommendations.Count)" -ForegroundColor Green
     
     Write-Host "`n+----------------------------------------------------------------+" -ForegroundColor Yellow
-    Write-Host "�           INTELLIGENT RECOMMENDATIONS FOR $AgentName" -ForegroundColor Yellow
+    Write-Host "ï¿½           INTELLIGENT RECOMMENDATIONS FOR $AgentName" -ForegroundColor Yellow
     Write-Host "+----------------------------------------------------------------+" -ForegroundColor Yellow
     
     foreach ($rec in $recommendations) {
@@ -696,7 +696,7 @@ function Show-ResurrectionMenu {
     
     # === HEADER ===
     Write-Host "`n+----------------------------------------------------------------+" -ForegroundColor Cyan
-    Write-Host "�          AGENT RESURRECTION: $AgentName" -ForegroundColor Cyan
+    Write-Host "ï¿½          AGENT RESURRECTION: $AgentName" -ForegroundColor Cyan
     Write-Host "+----------------------------------------------------------------+" -ForegroundColor Cyan
     
     # === BRAIN SUMMARY ===
@@ -744,7 +744,7 @@ function Show-ResurrectionMenu {
                 "Medium" { "Cyan" }
                 default { "Gray" }
             }
-            Write-Host "   � [$($task.Priority)]" -NoNewline -ForegroundColor $priorityColor
+            Write-Host "   ï¿½ [$($task.Priority)]" -NoNewline -ForegroundColor $priorityColor
             Write-Host " $($task.Description)" -ForegroundColor White
         }
     }
@@ -760,14 +760,14 @@ function Show-ResurrectionMenu {
                 "Stale" { "Yellow" }
                 default { "Gray" }
             }
-            Write-Host "   � $($proj.Name)" -NoNewline -ForegroundColor White
+            Write-Host "   ï¿½ $($proj.Name)" -NoNewline -ForegroundColor White
             Write-Host " [$($proj.Status)]" -ForegroundColor $statusColor
         }
     }
     
     # === INTERACTIVE MENU ===
     Write-Host "`n+----------------------------------------------------------------+" -ForegroundColor Green
-    Write-Host "�                    RESURRECTION OPTIONS                        �" -ForegroundColor Green
+    Write-Host "ï¿½                    RESURRECTION OPTIONS                        ï¿½" -ForegroundColor Green
     Write-Host "+----------------------------------------------------------------+" -ForegroundColor Green
     
     Write-Host "`n[1] Execute Top Recommendation" -ForegroundColor Cyan
@@ -802,7 +802,7 @@ function Show-ResurrectionMenu {
         "3" {
             Write-Host "`n?? ALL PROJECTS ($($projects.Count) total)" -ForegroundColor Yellow
             foreach ($proj in $projects) {
-                Write-Host "`n� $($proj.Name) [$($proj.Status)]" -ForegroundColor White
+                Write-Host "`nï¿½ $($proj.Name) [$($proj.Status)]" -ForegroundColor White
                 Write-Host "  Path: $($proj.Path)" -ForegroundColor Gray
                 Write-Host "  Branch: $($proj.Branch)" -ForegroundColor Gray
                 Write-Host "  Last Updated: $($proj.LastUpdate)" -ForegroundColor Gray
@@ -832,3 +832,4 @@ function Show-ResurrectionMenu {
     
     Write-Host "`n--- End of Resurrection ---" -ForegroundColor Gray
 }
+

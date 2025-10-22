@@ -1,1 +1,3 @@
-D:\AgentSystem\resurrect-me.ps1
+﻿pwsh -NoProfile -ExecutionPolicy Bypass -File .\generate-init-prompt.ps1
+cd D:\AgentSystem
+.\start-session.ps1 -Intent production-hardening -ProjectFocus AgentSystem

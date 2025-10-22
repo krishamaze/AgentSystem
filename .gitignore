@@ -1,0 +1,19 @@
+﻿backups/
+.env
+.env_*
+node_modules/
+*.pyc
+__pycache__/
+
+# Logs and telemetry
+*.log
+.meta/telemetry.jsonl
+.meta/optimization-log.jsonl
+
+# Backups
+*.backup
+*-backup.ps1
+
+# Session artifacts
+init_prompt_*.txt
+optimization-report-*.md
