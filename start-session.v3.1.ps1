@@ -1,52 +1,38 @@
-﻿# AgentSystem v3.1 - Memory-First Start Session
+﻿# AgentSystem - Start Session v3.1 (Multi-Platform)
 param(
+    [string]$Intent = "general",
     [string]$ProjectFocus = "AgentSystem",
-    [string]$Intent = "general"
+    [switch]$Perplexity  # New flag for Perplexity compatibility
 )
 
-Write-Host "=== STARTING SESSION (v3.1 Memory-First) ===" -ForegroundColor Cyan
+Write-Host "=== STARTING SESSION (v3.1) ===" -ForegroundColor Cyan
 
-# Initialize session
 $env:SESSION_ID = "session_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
-$env:SESSION_START = Get-Date
 Write-Host "Session ID: $env:SESSION_ID"
 Write-Host "Intent: $Intent"
-Write-Host "Project: $ProjectFocus`n"
+Write-Host "Platform: $(if($Perplexity){'Perplexity AI'}else{'Local Agent'})`n"
 
-# Load evolved template
-$template = Get-Content ".\init_prompt_v3.1_template.txt" -Raw
-
-# Replace placeholders
-$initPrompt = $template -replace '{SESSION_ID}', $env:SESSION_ID
-$initPrompt = $initPrompt -replace '{INTENT}', $Intent
+if ($Perplexity) {
+    # Generate Perplexity-compatible init with pre-loaded context
+    Write-Host "Generating Perplexity init with pre-loaded mem0 context..." -ForegroundColor Yellow
+    python generate_perplexity_init.py
+    
+    $initPrompt = Get-Content "init_prompt_v3.1_perplexity.txt" -Raw
+    Write-Host "✓ Context-rich init generated ($(($initPrompt.Length)) bytes)" -ForegroundColor Green
+} else {
+    # Use minimal template for local agents
+    $template = Get-Content ".\init_prompt_v3.1_template.txt" -Raw
+    $initPrompt = $template -replace '{SESSION_ID}', $env:SESSION_ID
+    $initPrompt = $initPrompt -replace '{INTENT}', $Intent
+    Write-Host "✓ Minimal init loaded (500 bytes)" -ForegroundColor Green
+}
 
 # Copy to clipboard
 $initPrompt | Set-Clipboard
 
-# Show what's different
-Write-Host "✓ Evolved init copied to clipboard" -ForegroundColor Green
-Write-Host "  Template: v3.1 (Memory-First)"
-Write-Host "  Size: 0.75 KB (59% smaller than v4.0)"
-Write-Host "  Focus: Query mem0 for instructions`n"
-
-# Rotational protocol reminder
-$protocols = @(
-    "Batch Rule: Provide 3-5 commands maximum per response",
-    "Memory-First: Query mem0 before creating any files",
-    "Predictive Context: After each step, predict next + query context",
-    "Transparency: Always explain what you loaded and why",
-    "Task Continuity: Check for incomplete tasks before starting new ones"
-)
-
-$protocolIndex = (Get-Date).Minute % $protocols.Count
-Write-Host "📌 CRITICAL PROTOCOL #$($protocolIndex + 1):" -ForegroundColor Yellow
-Write-Host "   $($protocols[$protocolIndex])" -ForegroundColor Yellow
-Write-Host "   → You MUST acknowledge this in your first response`n" -ForegroundColor Gray
-
-Write-Host "=== NEXT STEPS ===" -ForegroundColor Cyan
-Write-Host "1. Open NEW Perplexity thread"
+Write-Host "`n=== NEXT STEPS ===" -ForegroundColor Cyan
+Write-Host "1. Open NEW thread (Perplexity/ChatGPT/Claude)"
 Write-Host "2. Paste clipboard content"
-Write-Host "3. AI queries mem0 for instructions"
-Write-Host "4. AI acknowledges protocol reminder`n"
+Write-Host "3. AI will start with pre-loaded context`n"
 
 Write-Host "✓ Session ready!" -ForegroundColor Green
