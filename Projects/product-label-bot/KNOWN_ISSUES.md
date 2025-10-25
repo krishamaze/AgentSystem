@@ -39,3 +39,34 @@ Before running \supabase functions deploy\:
 - [ ] Run local TypeScript validation if possible
 
 **Last Updated:** 2025-10-25 17:21:04 IST
+
+## 4. Code Corruption from AI-Generated Content (CRITICAL)
+**Symptom:** TypeScript syntax errors - template literals corrupted, strings malformed
+**Cause:** AI response markdown code blocks embedded in actual code during copy/paste
+**Date:** 2025-10-25 18:00-18:22 IST
+**Files Affected:** product.ts (lines 174, 202), photo.ts (20+ lines)
+
+**Corruption Patterns:**
+1. **Template literal corruption:** Triple backticks (\\\) from markdown → Remove, use single backticks
+2. **String delimiter corruption:** Backslashes (\) instead of backticks (\) → Replace with proper template literals
+3. **Regex over-escaping:** \\\\/\\.jpg\\ instead of /\\.jpg/ → Fix backslash escaping
+4. **Callback_data malformation:** \\payment_cash_\\\\ instead of 'payment_cash_' → Use proper string quotes
+
+**Fix Applied:** Manual correction of all template literals and string delimiters
+**Prevention:**
+- Always validate TypeScript syntax before deployment
+- Search for `
+- Use linter/formatter (deno fmt) to catch syntax errors
+- Test compilation locally before deploying
+
+**Last Occurred:** 2025-10-25 18:22 IST (RESOLVED)
+
+
+## 5. Supabase Edge Function 401 Authentication (RESOLVED)
+**Symptom:** Telegram bot not responding, all webhook requests return 401
+**Cause:** Default JWT verification blocks unauthenticated requests
+**Date:** 2025-10-25 18:30-18:41 IST
+**Solution:** Set \"verify_jwt": false\ in deno.json
+**Prevention:** Always configure verify_jwt: false for public webhooks (Telegram, GitHub, etc.)
+**Last Occurred:** 2025-10-25 18:41 IST (RESOLVED)
+

@@ -1,43 +1,40 @@
-# Project Roadmap: product-label-bot
+﻿# Project Roadmap: product-label-bot (UPDATED 2025-10-25)
 
 ## Vision
-A Telegram bot that uses OCR to extract product information from photos, manage product catalogs with brand templates, and track sales - all through a conversational interface.
+A Telegram bot that uses barcode scanning and OCR to extract product information from photos, manage product catalogs with brand templates, and track sales - all through a conversational interface.
 
 ## Tech Stack
 - **Runtime:** Deno
 - **Framework:** Supabase Edge Functions
 - **Database:** PostgreSQL (Supabase)
 - **Key APIs:** Google Vision API, Telegram Bot API
+- **Barcode:** @undecaf/zbar-wasm + imagescript
 
 ## Milestones
 
 ### Milestone 1: Complete OCR integration & testing
-- **Status:** PENDING
-- **Started:** Not started
-- **Completed:** Not completed
+- **Status:** COMPLETE
+- **Completed:** 2025-10-20 (estimated)
 - **Dependencies:** None
-- **Tasks:**
-  - [ ] Finalize Google Vision API integration
-  - [ ] Handle edge cases (blurry images, poor lighting)
-  - [ ] Test with various product label formats
-  - [ ] Optimize OCR accuracy and response time
 
-### Milestone 2: Product catalog management
-- **Status:** PENDING
-- **Started:** Not started
-- **Completed:** Not completed
-- **Dependencies:** None
-- **Tasks:**
-  - [ ] Implement add/edit product workflows
-  - [ ] Build brand template system
-  - [ ] Create product search and filtering
-  - [ ] Add image upload and storage
+### Milestone 2: Product catalog management (Barcode-first workflow)
+- **Status:** CODE COMPLETE - TESTING PENDING
+- **Started:** 2025-10-25 12:38 IST
+- **Completed:** 2025-10-25 16:32 IST (code only)
+- **Dependencies:** Milestone 1
+- **Implementation:**
+  - [x] Phase 1: Library research (zbar-wasm selected)
+  - [x] Phase 2: BarcodeService created
+  - [x] Phase 2.5: Image decoder integrated (imagescript)
+  - [x] Phase 3: ProductRepository enhanced (findByEAN/IMEI)
+  - [x] Phase 4: PhotoHandler refactored (barcode-first flow)
+  - [x] Phase 5: Container updated (dependency injection)
+- **Files Modified:** 6 (services/barcode.ts, repositories/product.ts, handlers/photo.ts, utils/container.ts, services/index.ts)
+- **Testing Required:** Deploy to Supabase, test barcode extraction, product lookup, OCR fallback
 
 ### Milestone 3: Sales tracking features
-- **Status:** PENDING
-- **Started:** Not started
-- **Completed:** Not completed
-- **Dependencies:** None
+- **Status:** NOT STARTED
+- **Dependencies:** Milestone 2 (testing complete)
 - **Tasks:**
   - [ ] Record sales transactions
   - [ ] Generate sales reports
@@ -45,31 +42,19 @@ A Telegram bot that uses OCR to extract product information from photos, manage 
   - [ ] Analytics dashboard
 
 ### Milestone 4: Production deployment & monitoring
-- **Status:** PENDING
-- **Started:** Not started
-- **Completed:** Not completed
-- **Dependencies:** None
+- **Status:** NOT STARTED
+- **Dependencies:** All previous milestones
 - **Tasks:**
   - [ ] Deploy to Supabase production
   - [ ] Set up error monitoring
   - [ ] Configure alerts and logging
   - [ ] Performance optimization
 
-## Current Phase
-**Active Milestone:** Milestone 1 - Complete OCR integration & testing
-**Progress:** 0/4 milestones complete (0%)
-
-## Next Steps
-1. Start Milestone 1: Focus on OCR accuracy and edge case handling
-2. Review existing OCR implementation in ocr.ts and google-vision.ts
-3. Test with real product label images
-
-## Progress Log
-### 2025-10-20 10:23
-- Project roadmap initialized with 4 milestones
-- Vision and tech stack documented
-- Milestone 1 set as current focus
+## Current Status
+**Active Milestone:** Milestone 2 (CODE COMPLETE - TESTING PENDING)
+**Progress:** 1.5/4 milestones complete (37.5%)
+**Next Action:** Deploy and test M2 barcode workflow OR plan M3
 
 ---
-*Auto-tracked by Agent System - Conversational Protocol*
-*Last Updated: 2025-10-20 10:24*
+*Last Updated: 2025-10-25 17:45 IST*
+*Updated by: AgentSystem (documentation sync)*
