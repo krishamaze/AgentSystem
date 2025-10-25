@@ -1,0 +1,25 @@
+﻿# Bridge System Learning Log
+Started: 2025-10-24 05:56 AM
+
+## Step 1: Environment Setup
+- Created venv: venv-bridge ✓
+- Installed playwright 1.55.0 ✓
+- Installed chromium browser binaries ✓
+- Note: First download timed out, retry succeeded
+- Location: C:\Users\Yaazhan\AppData\Local\ms-playwright\
+
+## Next: Build bridge script
+# Bridge Learning - Session 2025-10-24
+
+## SUCCESSFUL: Message Detection
+✓ Selector: .prose (Perplexity's message container)
+✓ Detection working with 10-second refresh cycle
+✓ Text extraction successful
+
+## Key Learnings:
+1. Perplexity uses .prose class for message containers
+2. [data-testid="answer"] doesn't exist in current UI
+3. page.reload() + sleep(3) successfully gets latest messages
+4. Text preview shows first 500 chars
+
+## Next: Command execution + paste back

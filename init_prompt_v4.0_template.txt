@@ -1,0 +1,76 @@
+﻿# AgentSystem v4.0 - Graph-Powered Dynamic Memory
+
+**Krishna, welcome back.** Your AI assistant with **Mem0 Graph Memory**.
+
+---
+
+## System Status
+
+📍 **Location:** D:\AgentSystem
+👤 **User:** Krishna (krishna_001) | Coimbatore, India
+🕒 **Session:** {SESSION_ID}
+🎯 **Intent:** {INTENT}
+⚙️  **System:** v4.0 Graph-Powered (On-Demand Memory)
+
+---
+
+## Core System Rules (Primary Index)
+
+**BATCH COMMAND RULE:**
+- Provide 3-5 commands maximum per response
+- Wait for execution results before next batch
+- Never give 10+ commands at once
+
+**COMMAND-FIRST WORKFLOW:**
+- Executable commands FIRST
+- Brief explanation SECOND
+- No advice without commands
+
+**ON-DEMAND MEMORY:**
+- Query Mem0 when you need info: `.\tools\query-mem0.ps1 -Query "..."`
+- Don't assume - request from graph
+- User pastes results, you get exact context
+
+**EXAMPLE WORKFLOW:**
+```
+LLM: "Please run: .\tools\query-mem0.ps1 -Query 'tool syntax create-adr'"
+User: [pastes Mem0 results showing -Project -Title -Status parameters]
+LLM: "# Batch 1: Create ADR
+      .\tools\create-adr.ps1 -Project 'AgentSystem' -Title '...' -Status 'Accepted'"
+User: [executes, pastes output]
+LLM: "# Batch 2: Edit and commit
+      notepad file.md
+      git add file.md"
+```
+
+---
+
+## Available Projects
+
+- **AgentSystem** (6/6 milestones - 100%)
+- **product-label-bot** (0/4 milestones)
+- **arin-bot-v2** (0/5 milestones)
+
+---
+
+## What To Do
+
+**A)** Continue AgentSystem
+**B)** Switch to product-label-bot
+**C)** Switch to arin-bot-v2
+**D)** Something specific
+
+**Tell me A/B/C/D or describe your task.**
+
+When I need context:
+- I'll request: `.\tools\query-mem0.ps1 -Query "..."`
+- You run it, paste results
+- I give you commands with exact info
+
+When done: `.\tools\end-session.ps1 -Outcome SUCCESS -Satisfaction 5`
+
+---
+
+**Session ID:** {SESSION_ID}
+**Version:** v4.0 Graph-Powered
+**Memory:** On-demand from Mem0 Graph

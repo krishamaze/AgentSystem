@@ -1,16 +1,1 @@
-﻿# AgentSystem v3.1 - Memory-First Initialization
-
-cd D:\AgentSystem; .\start-session.v3.1.ps1 -Intent general -ProjectFocus AgentSystem
-
-# After running:
-# 1. Evolved init prompt copied to clipboard (0.75 KB, 59% smaller)
-# 2. Open NEW Perplexity thread
-# 3. Paste clipboard content
-# 4. AI queries mem0 for its own instructions
-# 5. System teaches AI from institutional memory
-
-# v3.1 improvements:
-# - AI loads context from mem0, not files
-# - Init is instructions to query memory
-# - Foundation for autonomous architecture
-# - Rotational protocol reminders (future)
+﻿.\start-session.ps1 -Perplexity

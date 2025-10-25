@@ -1,0 +1,115 @@
+# AgentSystem v3.1 - INITIALIZATION COMMAND
+
+**SESSION:** session_20251024_170750  
+**USER:** Krishna (krishna_001)  
+**DIRECTIVE:** Execute initialization sequence and return validation report.
+
+---
+
+## SYSTEM CONTEXT (Why This Exists)
+
+**Purpose:** AgentSystem is a persistent AI assistant that maintains state across sessions using Mem0 for long-term memory. Each session must initialize protocol rules, project index, and task queue before accepting commands.
+
+**Architecture:**
+- **Memory Layer:** Mem0 stores protocols, projects, tasks, learnings
+- **Session Layer:** PowerShell scripts generate context-rich init prompts
+- **Execution Layer:** AI agent validates state and executes commands
+- **Learning Layer:** System records improvements back to Mem0
+
+---
+
+## PRE-LOADED CONTEXT (Read-Only Data)
+
+### Execution Protocol v2.0
+AgentSystem Command Execution Protocol v2.0: Execute batch operations when tasks are independent and parallelizable. Use sequential execution only when outputs feed into subsequent operations. Memory-first discipline maintained: query memory before asking questions. Make decisions autonomously as senior technical partner. Protocol rules are now updatable memories retrieved at session start.
+
+### Active Projects (10)
+- arin-bot-v2 Is a project
+- arin-bot-v2 Milestone 3 status: INITIATED
+- Project arin-bot-v2 Owner is krishna_001
+- System tracks multiple projects
+- Project ownership is tracked
+- Mem0 Platform integration research task status is SUCCESS
+- Project arin-bot-v2 Milestone is 1
+- Project arin-bot-v2 Status is active
+- product-label-bot is a project owned by krishna_001 located at D:\product-label-bot with status active and milestone 1
+- User wants to create DRAFT plans that evolve with learning
+
+### Pending Tasks (5)
+- arin-bot-v2 Milestone 3 status: INITIATED
+- complete-milestone.ps1 requires ProjectName and MilestoneId parameters
+- complete-milestone.ps1 completes a milestone and auto-syncs
+- AgentSystem Milestone is 3
+- Task appeared complete but was actually 58% done.
+
+### Auto-Discovered This Session
+- fe-be-alignment-analysis
+- mem0-chrome-extension-main
+- PhoneTreat New
+- pt2
+- scraper
+- stockflow
+- VibeCodePal
+
+---
+
+## EXECUTION COMMANDS (What to Do)
+
+Execute these in sequence. Each must return validation output.
+
+### CMD-1: LOAD_PROTOCOL
+**Action:** Parse Execution Protocol v2.0 rules from context above  
+**Key Rules to Extract:**
+- Batch vs sequential execution logic
+- Memory-first discipline (query memory before asking user)
+- Autonomous decision-making authority
+
+**Validation:** Confirm you can explain when to use batch vs sequential  
+**Output Format:** PROTOCOL_LOADED: v2.0 | Key Rule: [state one rule]
+
+### CMD-2: INDEX_PROJECTS
+**Action:** Build in-memory index of all listed projects  
+**Required Count:** 10 tracked projects + 7 auto-discovered
+
+**Validation:** Can you list project names on demand?  
+**Output Format:** PROJECTS_INDEXED: 10/17 | Sample: [list 2 project names]
+
+### CMD-3: QUEUE_TASKS  
+**Action:** Load 5 pending tasks into priority queue  
+**Prioritization Logic:**
+- INITIATED status = highest priority
+- Tasks with percentage completion < 100% need attention
+- Dependencies (e.g., milestone completion scripts) noted
+
+**Validation:** Identify which task requires immediate action  
+**Output Format:** TASKS_QUEUED: 5 | PRIORITY_1: [task name + reason]
+
+### CMD-4: STATE_VERIFICATION
+**Action:** Cross-check for inconsistencies  
+**Known Issue:** "Task appeared complete but was actually 58% done"  
+**Check for:** Status mismatches, incomplete milestones, missing dependencies
+
+**Validation:** Flag any warnings found  
+**Output Format:** STATE_CHECK: [PASS/WARNINGS] | Issues: [list or "none"]
+
+---
+
+## REQUIRED RESPONSE (How to Report)
+
+Return ONLY this structure (fill in values):
+
+\INIT_STATUS: [SUCCESS/PARTIAL/FAILED]
+─────────────────────────────────
+PROTOCOL_LOADED: [status + key rule]
+PROJECTS_INDEXED: [count/total + 2 samples]
+TASKS_QUEUED: [count + top priority]
+STATE_CHECK: [status + issues if any]
+─────────────────────────────────
+SYSTEM_READY: [true/false]
+NEXT_ACTION: awaiting_user_command
+\
+**CRITICAL:** Do NOT provide explanations, summaries, or conversational text. Execute commands and report validation results ONLY.
+
+**PERPLEXITY EXECUTION MODE:** Treat this as a system initialization script, not a conversation starter. Return only validation report.
+
+**Session initialized. Awaiting execution report.**

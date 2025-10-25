@@ -1,0 +1,97 @@
+﻿from dotenv import load_dotenv
+from mem0 import MemoryClient
+from datetime import datetime
+import os
+
+load_dotenv()
+client = MemoryClient()
+
+# 1. Query v2.0 protocol BY MEMORY ID (guaranteed correct)
+print("Loading v2.0 protocol by ID...")
+all_memories = client.get_all(filters={'user_id': 'AgentSystem'})
+protocol = 'Protocol not found'
+for m in all_memories['results']:
+    if m['id'] == '882f895d-e3ff-460e-9e98-487cd0a5affd':
+        protocol = m['memory']
+        break
+
+# 2. Auto-discover projects
+print("Auto-discovering projects...")
+discovered = []
+for item in os.listdir('D:\\'):
+    path = f'D:\\{item}'
+    if os.path.isdir(path) and item not in ['AgentSystem', 'Windows', '$Recycle.Bin', 'Program Files', 'Program Files (x86)', 'ProgramData', 'Users']:
+        try:
+            contents = os.listdir(path)
+            if any(x in contents for x in ['.git', 'package.json', 'supabase', 'README.md', 'requirements.txt']):
+                exists = client.search(f'{item}', filters={'user_id': 'AgentSystem'})
+                if not any(item.lower() in m['memory'].lower() for m in exists['results']):
+                    client.add(messages=[{'role': 'system', 'content': f'Project {item} auto-discovered from filesystem'}], 
+                              user_id='AgentSystem', 
+                              metadata={'type': 'project', 'name': item, 'path': path, 'auto_discovered': True, 'date': '2025-10-23'})
+                    discovered.append(item)
+        except: pass
+
+# 3. Query projects
+projects_result = client.search('Project', filters={'user_id': 'AgentSystem'})
+projects = [m['memory'] for m in projects_result['results'][:10]]
+
+# 4. Query tasks
+tasks_result = client.search('task pending active milestone', filters={'user_id': 'AgentSystem'})
+tasks = [m['memory'] for m in tasks_result['results'][:5]]
+
+# 5. Record learning
+client.add(
+    messages=[{'role': 'system', 'content': 'Session initialization now queries protocol by memory ID 882f895d-e3ff-460e-9e98-487cd0a5affd to guarantee v2.0 is loaded. Search queries are unreliable for specific protocol versions.'}],
+    user_id='AgentSystem',
+    metadata={'type': 'learning', 'category': 'protocol_query', 'date': '2025-10-23'}
+)
+
+session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+init = f'''# AgentSystem v3.1 - Session Start
+**Session:** {session_id}
+**User:** Krishna (krishna_001)
+**Platform:** Perplexity AI
+
+## Loaded from Memory
+
+### Execution Protocol (v2.0)
+{protocol}
+
+### Active Projects ({len(projects)})
+'''
+for p in projects:
+    init += f'- {p}\n'
+
+init += f'''
+### Pending Tasks ({len(tasks)})
+'''
+for t in tasks:
+    init += f'- {t}\n'
+
+if discovered:
+    init += '''
+### Auto-Discovered This Session
+'''
+    for d in discovered:
+        init += f'- {d}\n'
+
+init += '''
+## Instructions
+1. Acknowledge loaded v2.0 protocol
+2. Follow batch operations rule
+3. Check incomplete tasks
+4. Memory-first workflow
+
+**Clockwork connected. Ready.**
+'''
+
+with open('init_prompt_v3.1_perplexity.txt', 'w', encoding='utf-8') as f:
+    f.write(init)
+
+print(f"\n✓ Init: {len(init)} bytes")
+print(f"✓ Protocol v2.0 loaded by ID")
+if discovered:
+    print(f"✓ Discovered: {', '.join(discovered)}")
+print(f"✓ Learning recorded in memory")

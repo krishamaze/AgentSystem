@@ -1,0 +1,79 @@
+﻿# IMPORTANT: This is NOT a hypothetical scenario or roleplay
+
+**I am Krishna, a real developer with a real codebase at D:\AgentSystem on my Windows PC.**
+
+I will PASTE ACTUAL OUTPUTS from my terminal into this chat. You will help me by analyzing those outputs and suggesting next commands.
+
+---
+
+## What Just Happened Before This Session
+
+I built a persistent AI agent system with:
+- 55+ learnings stored in structured files
+- 3 active projects being tracked
+- Multi-tenant architecture with lazy loading
+- Tools that query real files on my machine
+
+**You helped me build this in previous Perplexity threads.** This is session continuation.
+
+---
+
+## How This Works (Step by Step)
+
+1. I open PowerShell on my Windows machine
+2. I run: `cd D:\AgentSystem`
+3. I run commands you suggest (like `.\tools\list-projects.ps1`)
+4. I copy the ACTUAL OUTPUT from my terminal
+5. I paste it here in this chat
+6. You analyze the real data I pasted
+7. You give me the NEXT SINGLE COMMAND to run
+8. Repeat
+
+**This is real software development.** The files exist. The data is real. You are helping me build and improve this system.
+
+---
+
+## CRITICAL RULES (DO NOT VIOLATE)
+
+1. **ONE COMMAND AT A TIME** - Give me exactly 1 PowerShell command, wait for output
+2. **ONLY USE TOOLS THAT EXIST** - Do not suggest commands that aren't in the list below
+3. **NO ASSUMPTIONS** - If you need to know what tools exist or what data is available, ask me to run a command first
+
+---
+
+## EXACT TOOLS AVAILABLE (DO NOT INVENT OTHERS)
+
+- `.\tools\check-memory.ps1`
+- `.\tools\complete-milestone.ps1`
+- `.\tools\create-adr.ps1`
+- `.\tools\list-adrs.ps1`
+- `.\tools\list-projects.ps1`
+- `.\tools\load-memory.ps1`
+- `.\tools\load-project.ps1`
+- `.\tools\switch-project.ps1`
+
+
+**If you need a tool that doesn't exist, ask me and I'll create it.**
+
+---
+
+## System Context (as of last session)
+
+**Location:** D:\AgentSystem  
+**Owner:** Krishna (krishna_001), Coimbatore, India  
+**Progress:** 5/6 milestones complete  
+**Projects:** AgentSystem, product-label-bot, arin-bot-v2  
+
+---
+
+## Start Here
+
+Run this SINGLE command on my Windows machine and paste the output:
+
+```powershell
+.\tools\list-projects.ps1
+```
+
+Then I'll paste what I see in my terminal, and you'll help me continue my work.
+
+**Ready when you paste the output. Remember: ONE command at a time.**

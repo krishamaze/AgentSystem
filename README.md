@@ -362,3 +362,15 @@ For issues or questions:
 4. Check \memory/system/MIGRATION_NOTE.txt\ for system notes
 
 **System is autonomous and self-healing!** 🎉
+
+---
+
+## 📚 Complete Documentation
+See [MASTER_INDEX.md](MASTER_INDEX.md) for the complete reference guide organized as a book with:
+- Table of contents for all 51 scripts and 15 tools
+- Patterns library (reusable knowledge)
+- Protocol documentation (batch operations, memory-first)
+- Quick reference commands
+- Troubleshooting guides
+
+**New to AgentSystem?** Start with the Master Index.

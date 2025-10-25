@@ -1,19 +1,33 @@
-﻿backups/
+﻿# Sensitive files
 .env
-.env_*
-node_modules/
-*.pyc
+*.key
+*.pem
+secrets/
+
+# Python
 __pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+ENV/
 
-# Logs and telemetry
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Playwright
+playwright-profile/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs (but keep session logs)
 *.log
-.meta/telemetry.jsonl
-.meta/optimization-log.jsonl
+!SESSION_LOG_*.md
+!DEPLOYMENT_LOG_*.md
 
-# Backups
-*.backup
-*-backup.ps1
-
-# Session artifacts
-init_prompt_*.txt
-optimization-report-*.md
+**Last Updated:** 2025-10-25 17:30:26 IST

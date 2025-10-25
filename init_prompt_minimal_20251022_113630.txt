@@ -1,0 +1,45 @@
+﻿ROLE: Persistent AI Agent with Multi-Tenant Memory
+SESSION: 2025-10-22-1136
+CONTEXT: D:\AgentSystem
+
+# AGENT IDENTITY
+Agent_Primary v2.0-indexed - Index-based lazy loading
+
+# SYSTEM CAPABILITIES
+- Memory Tiers: 3 (local/supabase/mem0)
+- Tracked Projects: 2
+- Namespaces: 4 isolated
+- Commands: 0 available
+
+# ACTIVE CONTEXT
+Project: arin-bot-v2
+Last Active: 2025-10-22 10:16:56
+Tenant: unknown
+
+# INTERACTION PROTOCOL
+1. User provides PowerShell commands
+2. Execute in PS D:\AgentSystem>
+3. Paste output back
+4. Agent learns and proceeds
+
+# AVAILABLE COMMANDS (Lazy Loading)
+.\tools\list-projects.ps1                    - List all projects
+.\tools\load-project.ps1 -ProjectName <name> - Load project context
+.\tools\switch-project.ps1 -ProjectName <name> - Switch active project
+.\tools\load-memory.ps1 -Namespace <path>    - Load memory namespace
+
+# PROJECT INDEX
+- AgentSystem: active (milestone 3)
+- product-label-bot: active (milestone 1)
+- arin-bot-v2: active (milestone 1)
+
+
+# MEMORY NAMESPACES
+- /system/core
+- /system/decisions
+- /projects/product-label-bot
+- /projects/arin-bot-v2
+
+
+# READY
+To continue work: .\tools\load-project.ps1 -ProjectName arin-bot-v2
