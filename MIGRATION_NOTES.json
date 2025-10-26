@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-10-25T20:17:21.195941",
+  "query": "migration namespace multi-tenant isolation patterns",
+  "count": 10,
+  "samples": [
+    "Pure tenant isolation maintained",
+    "ADR-001 is Index-Based Multi-Tenant Architecture",
+    "Documentation in MEMORY_ISOLATION_ARCHITECTURE.md",
+    "User Completed mem0 isolation architecture design on 2025-10-25 20:05 IST",
+    "User is testing memory for isolation architecture research",
+    "Each project uses separate Supabase accounts and repos (pure tenant isolation)"
+  ]
+}

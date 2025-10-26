@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-10-25T20:17:14.369818",
+  "project_config": {
+    "enable_graph": true,
+    "custom_categories": [
+      "project",
+      "milestone",
+      "session",
+      "task",
+      "decision",
+      "learning",
+      "error"
+    ],
+    "version": "v1"
+  },
+  "query": "graph memory relationships entities extraction",
+  "count": 10,
+  "samples": [
+    "User Architecture includes Namespace isolation via user_id per project (AgentSystem, product-label-bot, arin-bot-v2) and GraphMem enabled for contextual relationships",
+    "brand_templates structure: id, brand_name, detection_patterns, extraction_patterns, mandatory_fields, priority, is_active",
+    "Success criteria: AI detects intent and fetches relevant memories",
+    "arin-bot-v2 Is a project",
+    "arin-bot-v2 Milestone 1 (Gemini integration) per project roadmap.md."
+  ]
+}

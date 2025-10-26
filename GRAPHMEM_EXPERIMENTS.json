@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-10-25T20:19:48.306421",
+  "exp1": {
+    "title": "Entity Extraction",
+    "status": "done",
+    "query": "barcode detection",
+    "results": [
+      "product-label-bot performs barcode detection",
+      "product-label-bot selected barcode library @undecaf/zbar-wasm v0.10.1 (WebAssembly, Deno-compatible, EAN-13 support)",
+      "Known: barcode detection needs tuning (low priority)",
+      "product-label-bot barcode-first workflow fully implemented",
+      "User messages: no barcode error, barcode detected, product identified",
+      "product-label-bot Milestone 2 (barcode-first workflow) CODE COMPLETE, testing pending on 2025-10-25 17:42",
+      "product-label-bot documented barcode library selection in BARCODE_LIBRARY_SELECTION.md",
+      "Barcode found triggers 2-tier search (IMEI/SN, EAN-13)",
+      "product-label-bot flow: photo → barcode extraction → error if none → barcode found → 2-tier search (IMEI/SN, EAN) → product found → session created → product not found → OCR fallback",
+      "product-label-bot is at Milestone 2 barcode implementation complete"
+    ]
+  },
+  "exp2": {
+    "title": "Relationship Formation",
+    "status": "done",
+    "query": "Milestone 1",
+    "results": [
+      "Milestone 2 COMPLETE 2025-10-25 16:32:46 IST",
+      "AgentSystem Milestone is 3",
+      "product-label-bot Milestone 2 Phase 2 completed on 2025-10-25 15:28:46 IST",
+      "product-label-bot Milestone 2 Phase 1 completed on 2025-10-25 15:25 IST",
+      "product-label-bot Milestone 2 Phase 3 completed on 2025-10-25 15:30:19 IST",
+      "complete-milestone.ps1 completes a milestone and auto-syncs",
+      "product-label-bot MILESTONE 2 COMPLETE on 2025-10-25 19:21 IST",
+      "M2 ACHIEVED",
+      "arin-bot-v2 Milestone 3 Status is INITIATED",
+      "product-label-bot progress is 37.5% (1.5/4 milestones)"
+    ]
+  }
+}
